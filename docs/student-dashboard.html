@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartStudy â Student Dashboard</title>
+  <title>SmartStudy — Student Dashboard</title>
   
   
   <link rel="stylesheet" href="css/style.css">
@@ -16,13 +16,13 @@
       <div class="logo">SmartStudy</div>
       <div class="subtitle">Learning Intelligence Platform</div>
       <nav>
-        <a href="#" class="active" data-section="dashboard">ð Dashboard</a>
-        <a href="#" data-section="practice">ð MCQ Practice</a>
-        <a href="#" data-section="sip">ð¯ My SIP Scores</a>
-        <a href="#" data-section="revisions">ð Revisions</a>
-        <a href="#" data-section="doubts">â Ask a Doubt</a>
-        <a href="#" data-section="plans">ð Study Plans</a>
-        <a href="#" data-section="achievements">ð Achievements</a>
+        <a href="#" class="active" data-section="dashboard">📊 Dashboard</a>
+        <a href="#" data-section="practice">📝 MCQ Practice</a>
+        <a href="#" data-section="sip">🎯 My SIP Scores</a>
+        <a href="#" data-section="revisions">🔄 Revisions</a>
+        <a href="#" data-section="doubts">❓ Ask a Doubt</a>
+        <a href="#" data-section="plans">📋 Study Plans</a>
+        <a href="#" data-section="achievements">🏆 Achievements</a>
       </nav>
       <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
     </aside>
@@ -33,7 +33,7 @@
       <section id="section-dashboard">
         <div class="page-header">
           <h1>Welcome back!</h1>
-          <div class="streak-badge" id="streakBadge">ð¥ 0 day streak</div>
+          <div class="streak-badge" id="streakBadge">🔥 0 day streak</div>
         </div>
 
         <div class="stats-grid" id="statsGrid">
@@ -167,7 +167,7 @@
         // Streak
         const streak = data.streak;
         document.getElementById('currentStreak').textContent = streak.current_streak;
-        document.getElementById('streakBadge').textContent = `ð¥ ${streak.current_streak} day streak`;
+        document.getElementById('streakBadge').textContent = `🔥 ${streak.current_streak} day streak`;
         document.getElementById('totalPoints').textContent = streak.total_points.toLocaleString();
         document.getElementById('levelBadge').textContent = `Level ${streak.level}`;
 
