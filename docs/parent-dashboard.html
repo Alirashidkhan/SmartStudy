@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartStudy â Parent Dashboard</title>
+  <title>SmartStudy — Parent Dashboard</title>
   
   
   <link rel="stylesheet" href="css/style.css">
@@ -38,11 +38,11 @@
       <div class="logo">SmartStudy</div>
       <div class="subtitle">Parent Portal</div>
       <nav>
-        <a href="#" class="active" data-section="dashboard">ð My Children</a>
-        <a href="#" data-section="planner">ð Day Planner</a>
-        <a href="#" data-section="focus">ð¯ Focus Audit</a>
-        <a href="#" data-section="consent">ð Privacy & Consent</a>
-        <a href="#" data-section="notifications">ð Notifications</a>
+        <a href="#" class="active" data-section="dashboard">📊 My Children</a>
+        <a href="#" data-section="planner">📅 Day Planner</a>
+        <a href="#" data-section="focus">🎯 Focus Audit</a>
+        <a href="#" data-section="consent">🔒 Privacy & Consent</a>
+        <a href="#" data-section="notifications">🔔 Notifications</a>
       </nav>
       <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
     </aside>
@@ -244,7 +244,7 @@
           <div class="card">
             <div class="card-header">
               <h3>${child.student.first_name} ${child.student.last_name || ''}</h3>
-              <div class="streak-badge">ð¥ ${child.streak.current_streak} day streak</div>
+              <div class="streak-badge">🔥 ${child.streak.current_streak} day streak</div>
             </div>
             <div class="stats-grid">
               <div class="stat-card"><div class="label">Points</div><div class="value">${child.streak.total_points.toLocaleString()}</div><div class="change">Level ${child.streak.level}</div></div>
@@ -339,7 +339,7 @@
           </div>
           ${data.warnings.length > 0 ? `
             <div style="margin-top: 12px;">
-              ${data.warnings.map(w => `<span class="warning-chip">â ï¸ ${w}</span>`).join(' ')}
+              ${data.warnings.map(w => `<span class="warning-chip">⚠️ ${w}</span>`).join(' ')}
             </div>
           ` : '<div style="margin-top:8px;color:var(--success);font-size:13px;">All good for today!</div>'}
         `;
