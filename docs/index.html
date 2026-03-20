@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartStudy â Learning Intelligence Platform</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Password Gate */
+    .gate-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+      display: flex; align-items: center; justify-content: center; z-index: 9999;
+    }
+    .gate-card {
+      background: white; border-radius: 16px; padding: 40px; width: 90%; max-width: 400px;
+      text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .gate-card h1 { font-size: 28px; color: var(--primary); margin-bottom: 8px; }
+    .gate-card p { color: var(--text-secondary); margin-bottom: 24px; font-size: 14px; }
+    .gate-input {
+      width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 10px;
+      font-size: 16px; text-align: center; letter-spacing: 2px; outline: none;
+      transition: border-color 0.2s;
+    }
+    .gate-input:focus { border-color: var(--primary); }
+    .gate-input.error { border-color: #EF4444; animation: shake 0.5s; }
+    .gate-btn {
+      width: 100%; padding: 14px; background: var(--primary); color: white; border: none;
+      border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 16px;
+    }
+    .gate-btn:hover { background: #4338CA; }
+    .gate-error { color: #EF4444; font-size: 13px; margin-top: 8px; display: none; }
+    .gate-badge { display: inline-block; background: #EEF2FF; color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 16px; }
+    @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-8px); } 40%,80% { transform: translateX(8px); } }
+
+    /* Demo credentials */
+    .demo-creds { background: #F8FAFC; border-radius: 10px; padding: 16px; margin-top: 20px; text-align: left; }
+    .demo-creds h4 { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+    .demo-creds .cred { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; cursor: pointer; }
+    .demo-creds .cred:hover { color: var(--primary); }
+    .demo-creds .role { font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <!-- PASSWORD GATE -->
+  <div class="gate-overlay" id="passwordGate">
+    <div class="gate-card">
+      <div class="gate-badge">DEMO PREVIEW</div>
+      <h1>SmartStudy</h1>
+      <p>Learning Intelligence Platform for K-12 Schools</p>
+      <input type="password" class="gate-input" id="gatePassword" placeholder="Enter access password" autocomplete="off">
+      <div class="gate-error" id="gateError">Incorrect password. Try again.</div>
+      <button class="gate-btn" onclick="checkPassword()">Unlock Demo</button>
+    </div>
+  </div>
+
+  <!-- LOGIN (shown after password gate) -->
+  <div class="login-container" id="loginSection" style="display:none">
+    <div class="login-card">
+      <h1>SmartStudy</h1>
+      <p>Learning Intelligence Platform â Choose a role to explore</p>
+      <div id="modeLabel" style="font-size: 13px; color: var(--primary); margin-bottom: 20px;">Standalone Mode</div>
+
+      <div class="demo-creds" style="margin-bottom: 20px;">
+        <h4>Click a role to login:</h4>
+        <div class="cred" onclick="demoLogin('student')"><span class="role">ð¨âð Student</span><span>Arjun Kumar</span></div>
+        <div class="cred" onclick="demoLogin('teacher')"><span class="role">ð©âð« Teacher</span><span>Suresh Sharma</span></div>
+        <div class="cred" onclick="demoLogin('parent')"><span class="role">ðª Parent</span><span>Priya Kumar</span></div>
+        <div class="cred" onclick="demoLogin('admin')"><span class="role">âï¸ Admin</span><span>School Admin</span></div>
+        <div class="cred" onclick="demoLogin('principal')"><span class="role">ð« Principal</span><span>Dr. Meena Verma</span></div>
+      </div>
+
+      <p style="font-size: 12px; color: var(--text-secondary);">This is a demo with mock data. No real backend required.</p>
+    </div>
+  </div>
+
+  <script>
+    const ACCESS_PASSWORD = 'manarix2026';
+
+    // Check if already unlocked this session
+    if (sessionStorage.getItem('ss_unlocked') === 'true') {
+      document.getElementById('passwordGate').style.display = 'none';
+      document.getElementById('loginSection').style.display = '';
+    }
+
+    document.getElementById('gatePassword').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkPassword();
+    });
+
+    function checkPassword() {
+      const input = document.getElementById('gatePassword');
+      if (input.value === ACCESS_PASSWORD) {
+        sessionStorage.setItem('ss_unlocked', 'true');
+        document.getElementById('passwordGate').style.display = 'none';
+        document.getElementById('loginSection').style.display = '';
+      } else {
+        input.classList.add('error');
+        document.getElementById('gateError').style.display = 'block';
+        setTimeout(() => {
+          input.classList.remove('error');
+          document.getElementById('gateError').style.display = 'none';
+          input.value = '';
+        }, 2000);
+      }
+    }
+
+    const dashboardMap = {
+      student: 'student-dashboard.html',
+      teacher: 'teacher-dashboard.html',
+      parent: 'parent-dashboard.html',
+      admin: 'admin-dashboard.html',
+      principal: 'principal-dashboard.html',
+    };
+
+    function demoLogin(role) {
+      sessionStorage.setItem('ss_role', role);
+      window.location.href = dashboardMap[role];
+    }
+  </script>
+</body>
+</html>
