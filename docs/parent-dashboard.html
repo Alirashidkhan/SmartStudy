@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SmartStudy — Parent Dashboard</title>
-  
-  
+
+
   <link rel="stylesheet" href="css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -29,7 +29,48 @@
     .modal-overlay.active { display: flex; }
     .modal { background: white; border-radius: 12px; padding: 24px; width: 90%; max-width: 480px; max-height: 80vh; overflow-y: auto; }
     .modal h3 { margin-bottom: 16px; }
-    @media (max-width: 900px) { .planner-grid { grid-template-columns: 1fr; } }
+
+    /* Status badges for homework */
+    .status-pending { background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+    .status-completed { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+    .status-overdue { background: #fee2e2; color: #991b1b; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+
+    /* Quick stats summary */
+    .quick-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+    .quick-stat { background: var(--surface); padding: 12px; border-radius: 8px; border-left: 4px solid var(--primary); }
+    .quick-stat .label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+    .quick-stat .value { font-size: 20px; font-weight: 700; margin-top: 4px; }
+    .quick-stat .detail { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+    /* Subject cards */
+    .subject-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 16px 0; }
+    .subject-card { background: var(--surface); padding: 16px; border-radius: 8px; border-top: 3px solid; text-align: center; }
+    .subject-card .subject-name { font-weight: 600; font-size: 13px; margin-bottom: 8px; }
+    .subject-card .hours { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .subject-card .sessions { font-size: 11px; color: var(--text-secondary); }
+
+    /* Report card styles */
+    .report-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+    .subject-score { background: var(--surface); padding: 16px; border-radius: 8px; border-left: 4px solid var(--primary); }
+    .subject-score .name { font-weight: 600; margin-bottom: 8px; }
+    .subject-score .marks { display: flex; justify-content: space-between; margin: 8px 0; font-size: 14px; }
+    .subject-score .marks-val { font-weight: 600; }
+    .subject-score .grade { font-size: 20px; font-weight: 700; color: var(--primary); margin-top: 8px; }
+
+    .attendance-summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 16px 0; }
+    .attendance-item { background: var(--surface); padding: 12px; border-radius: 8px; }
+    .attendance-item .label { font-size: 12px; color: var(--text-secondary); }
+    .attendance-item .value { font-size: 20px; font-weight: 700; margin-top: 4px; }
+
+    .remarks-box { background: var(--surface); padding: 16px; border-radius: 8px; border-left: 4px solid var(--secondary); margin: 12px 0; line-height: 1.6; font-size: 13px; }
+
+    @media (max-width: 900px) {
+      .planner-grid { grid-template-columns: 1fr; }
+      .quick-stats { grid-template-columns: repeat(2, 1fr); }
+      .subject-cards { grid-template-columns: repeat(2, 1fr); }
+      .report-card-grid { grid-template-columns: 1fr; }
+      .attendance-summary { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -39,10 +80,13 @@
       <div class="subtitle">Parent Portal</div>
       <nav>
         <a href="#" class="active" data-section="dashboard">📊 My Children</a>
+        <a href="#" data-section="studytime">⏱️ Study Time</a>
+        <a href="#" data-section="homework">📋 Homework Status</a>
+        <a href="#" data-section="reportcard">📊 Report Card</a>
         <a href="#" data-section="planner">📅 Day Planner</a>
         <a href="#" data-section="focus">🎯 Focus Audit</a>
+        <a href="#" data-section="notifications">🔔 Notifications <span id="notifBadge" style="display:none;background:var(--danger);color:white;border-radius:50%;width:20px;height:20px;font-size:11px;display:inline-flex;align-items:center;justify-content:center;margin-left:4px;">0</span></a>
         <a href="#" data-section="consent">🔒 Privacy & Consent</a>
-        <a href="#" data-section="notifications">🔔 Notifications</a>
       </nav>
       <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
     </aside>
@@ -53,6 +97,68 @@
       <section id="section-dashboard">
         <div class="page-header"><h1>My Children's Progress</h1></div>
         <div id="childrenContainer" class="loading"><div class="spinner"></div>Loading...</div>
+      </section>
+
+      <!-- Study Time -->
+      <section id="section-studytime" style="display:none">
+        <div class="page-header">
+          <h1>Study Time & Engagement</h1>
+          <select id="studytimeChildSelect" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;"></select>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="card">
+          <div class="card-header"><h3>Study Summary</h3></div>
+          <div class="quick-stats" id="studytimeStats"></div>
+        </div>
+
+        <!-- Daily Breakdown -->
+        <div class="card">
+          <div class="card-header"><h3>Last 7 Days</h3></div>
+          <table>
+            <thead><tr><th>Date</th><th>Study Time</th><th>Sessions</th><th>Primary Subject</th></tr></thead>
+            <tbody id="studytimeTable"></tbody>
+          </table>
+        </div>
+
+        <!-- Subject Breakdown -->
+        <div class="card">
+          <div class="card-header"><h3>Subject Breakdown</h3></div>
+          <div class="subject-cards" id="subjectCards"></div>
+        </div>
+      </section>
+
+      <!-- Homework Status -->
+      <section id="section-homework" style="display:none">
+        <div class="page-header">
+          <h1>Homework Status</h1>
+          <select id="homeworkChildSelect" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;"></select>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="card">
+          <div class="card-header"><h3>Homework Summary</h3></div>
+          <div class="quick-stats" id="homeworkStats"></div>
+        </div>
+
+        <!-- Homework Table -->
+        <div class="card">
+          <div class="card-header"><h3>All Assignments</h3></div>
+          <table>
+            <thead><tr><th>Title</th><th>Subject</th><th>Due Date</th><th>Marks</th></tr></thead>
+            <tbody id="homeworkTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Report Card -->
+      <section id="section-reportcard" style="display:none">
+        <div class="page-header">
+          <h1>Report Card</h1>
+          <select id="reportcardChildSelect" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;"></select>
+        </div>
+
+        <div id="reportcardContainer" class="loading"><div class="spinner"></div>Loading...</div>
       </section>
 
       <!-- Day Planner -->
@@ -121,6 +227,12 @@
         </div>
       </section>
 
+      <!-- Notifications -->
+      <section id="section-notifications" style="display:none">
+        <div class="page-header"><h1>Notifications</h1></div>
+        <div id="notificationsList"></div>
+      </section>
+
       <!-- Consent -->
       <section id="section-consent" style="display:none">
         <div class="page-header"><h1>Privacy & Consent Management</h1></div>
@@ -131,12 +243,6 @@
           </p>
           <div id="consentList"></div>
         </div>
-      </section>
-
-      <!-- Notifications -->
-      <section id="section-notifications" style="display:none">
-        <div class="page-header"><h1>Notifications</h1></div>
-        <div id="notificationsList"></div>
       </section>
 
     </main>
@@ -184,6 +290,9 @@
         document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
         link.classList.add('active');
 
+        if (section === 'studytime') loadStudyTime();
+        if (section === 'homework') loadHomework();
+        if (section === 'reportcard') loadReportCard();
         if (section === 'planner') loadPlanner();
         if (section === 'focus') loadFocusAudit();
         if (section === 'consent') loadConsents();
@@ -211,11 +320,24 @@
       return `<span class="focus-score focus-bad">${s.toFixed(0)}%</span>`;
     }
 
+    function statusBadge(status) {
+      if (status === 'completed') return '<span class="status-completed">✓ Completed</span>';
+      if (status === 'overdue') return '<span class="status-overdue">⚠ Overdue</span>';
+      return '<span class="status-pending">⏳ Pending</span>';
+    }
+
     function formatDuration(seconds) {
       if (!seconds) return '0s';
       const m = Math.floor(seconds / 60);
       const s = seconds % 60;
       return m > 0 ? `${m}m ${s}s` : `${s}s`;
+    }
+
+    function formatHours(minutes) {
+      if (!minutes) return '0h';
+      const h = Math.floor(minutes / 60);
+      const m = minutes % 60;
+      return h > 0 ? (m > 0 ? `${h}h ${m}m` : `${h}h`) : `${m}m`;
     }
 
     function openModal(id) { document.getElementById(id).classList.add('active'); }
@@ -237,6 +359,9 @@
 
         // Populate child selectors
         const options = children.map((c, i) => `<option value="${c.student.id}">${c.student.first_name} ${c.student.last_name || ''}</option>`).join('');
+        document.getElementById('studytimeChildSelect').innerHTML = options;
+        document.getElementById('homeworkChildSelect').innerHTML = options;
+        document.getElementById('reportcardChildSelect').innerHTML = options;
         document.getElementById('plannerChildSelect').innerHTML = options;
         document.getElementById('focusChildSelect').innerHTML = options;
 
@@ -248,6 +373,13 @@
             </div>
             <div class="stats-grid">
               <div class="stat-card"><div class="label">Points</div><div class="value">${child.streak.total_points.toLocaleString()}</div><div class="change">Level ${child.streak.level}</div></div>
+              <div class="stat-card"><div class="label">Today's Study Time</div><div class="value">${formatHours(child.todayStudyMinutes || 0)}</div><div class="change">${child.weeklyStudyHours || 0}h this week</div></div>
+              <div class="stat-card">
+                <div class="label">Homework</div>
+                <div class="value">${child.homeworkSummary?.completed || 0}/${child.homeworkSummary?.assigned || 0}</div>
+                <div class="change">${child.homeworkSummary?.pending || 0} pending</div>
+              </div>
+              ${child.homeworkSummary?.overdue > 0 ? `<div class="stat-card"><div class="label" style="color:var(--danger);">⚠ Overdue</div><div class="value" style="color:var(--danger);">${child.homeworkSummary.overdue}</div></div>` : ''}
               ${child.sip.map(s => `
                 <div class="stat-card">
                   <div class="label">Subject ${s.subject_id}</div>
@@ -256,6 +388,7 @@
                 </div>
               `).join('')}
             </div>
+            ${child.reportCardAvailable ? '<div style="margin-top:12px;padding:12px;background:#dcfce7;border-radius:8px;color:#166534;font-size:13px;font-weight:500;">✓ Report card available</div>' : ''}
             ${child.recentRevisions.length > 0 ? `
               <h4 style="margin: 16px 0 8px; font-size: 14px; color: var(--text-secondary)">Recent Revisions</h4>
               <table>
@@ -278,6 +411,214 @@
         console.error(err);
       }
     }
+
+    // ============================================================
+    // STUDY TIME
+    // ============================================================
+    async function loadStudyTime() {
+      const studentId = document.getElementById('studytimeChildSelect').value;
+      if (!studentId) return;
+
+      try {
+        const data = await api.getChildEngagement(studentId);
+        const s = data.summary || {};
+
+        // Stats
+        document.getElementById('studytimeStats').innerHTML = `
+          <div class="quick-stat">
+            <div class="label">Today</div>
+            <div class="value">${formatHours(s.todayMinutes || 0)}</div>
+          </div>
+          <div class="quick-stat">
+            <div class="label">This Week</div>
+            <div class="value">${formatHours(s.weekMinutes || 0)}</div>
+          </div>
+          <div class="quick-stat">
+            <div class="label">Daily Avg</div>
+            <div class="value">${formatHours(Math.round((s.weekMinutes || 0) / 7))}</div>
+          </div>
+          <div class="quick-stat">
+            <div class="label">Most Studied</div>
+            <div class="value">${s.topSubject || '--'}</div>
+          </div>
+        `;
+
+        // Daily breakdown
+        const daily = data.daily || [];
+        document.getElementById('studytimeTable').innerHTML = daily.slice(0, 7).map(d => `
+          <tr>
+            <td>${new Date(d.date).toLocaleDateString()}</td>
+            <td>${formatHours(d.minutes_studied)}</td>
+            <td>${d.session_count}</td>
+            <td>${d.primary_subject || '--'}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="4">No data</td></tr>';
+
+        // Subject breakdown
+        const subjects = data.by_subject || [];
+        document.getElementById('subjectCards').innerHTML = subjects.map(subj => `
+          <div class="subject-card" style="border-top-color: ${subj.color || 'var(--primary)'}">
+            <div class="subject-name">${subj.subject_name}</div>
+            <div class="hours">${formatHours(subj.total_minutes)}</div>
+            <div class="sessions">${subj.session_count} sessions</div>
+          </div>
+        `).join('') || '<p style="grid-column: 1/-1;">No subject data</p>';
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    document.getElementById('studytimeChildSelect')?.addEventListener('change', loadStudyTime);
+
+    // ============================================================
+    // HOMEWORK STATUS
+    // ============================================================
+    async function loadHomework() {
+      const studentId = document.getElementById('homeworkChildSelect').value;
+      if (!studentId) return;
+
+      try {
+        const data = await api.parentDashboard();
+        const child = data.children.find(c => c.student.id === parseInt(studentId));
+        if (!child) return;
+
+        const hw = child.homeworkSummary || {};
+
+        // Stats
+        document.getElementById('homeworkStats').innerHTML = `
+          <div class="quick-stat">
+            <div class="label">Assigned</div>
+            <div class="value">${hw.assigned || 0}</div>
+          </div>
+          <div class="quick-stat">
+            <div class="label">Completed</div>
+            <div class="value">${hw.completed || 0}</div>
+          </div>
+          <div class="quick-stat">
+            <div class="label">Pending</div>
+            <div class="value">${hw.pending || 0}</div>
+          </div>
+          <div class="quick-stat" style="border-left-color: var(--danger);">
+            <div class="label">Overdue</div>
+            <div class="value">${hw.overdue || 0}</div>
+          </div>
+        `;
+
+        // Mock homework data - embed in page
+        const mockHomework = [
+          { id: 1, title: 'Chapter 5 Exercises', subject: 'Mathematics', dueDate: '2026-03-25', status: 'pending', marks: null },
+          { id: 2, title: 'Essay on Climate Change', subject: 'English', dueDate: '2026-03-23', status: 'overdue', marks: null },
+          { id: 3, title: 'Science Lab Report', subject: 'Science', dueDate: '2026-03-20', status: 'completed', marks: '18/20' },
+          { id: 4, title: 'History Project', subject: 'Social Studies', dueDate: '2026-03-28', status: 'pending', marks: null },
+          { id: 5, title: 'Algebra Problems', subject: 'Mathematics', dueDate: '2026-03-21', status: 'completed', marks: '19/20' }
+        ];
+
+        document.getElementById('homeworkTable').innerHTML = mockHomework.map(h => `
+          <tr>
+            <td>${h.title}</td>
+            <td>${h.subject}</td>
+            <td>${new Date(h.dueDate).toLocaleDateString()}</td>
+            <td>${statusBadge(h.status)}</td>
+            <td>${h.marks || '--'}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    document.getElementById('homeworkChildSelect')?.addEventListener('change', loadHomework);
+
+    // ============================================================
+    // REPORT CARD
+    // ============================================================
+    async function loadReportCard() {
+      const studentId = document.getElementById('reportcardChildSelect').value;
+      if (!studentId) return;
+
+      try {
+        const data = await api.parentDashboard();
+        const child = data.children.find(c => c.student.id === parseInt(studentId));
+        const container = document.getElementById('reportcardContainer');
+
+        if (!child?.reportCardAvailable) {
+          container.innerHTML = '<div class="card"><p style="color:var(--text-secondary);font-size:14px;">Report card will be available after mid-term exams.</p></div>';
+          return;
+        }
+
+        // Mock report card data
+        const reportCard = {
+          studentName: `${child.student.first_name} ${child.student.last_name}`,
+          overallPercentage: 82.5,
+          rank: 8,
+          attendancePercentage: 94,
+          subjects: [
+            { name: 'Mathematics', marks: 85, maxMarks: 100, grade: 'A', color: '#3b82f6' },
+            { name: 'English', marks: 78, maxMarks: 100, grade: 'B+', color: '#10b981' },
+            { name: 'Science', marks: 88, maxMarks: 100, grade: 'A', color: '#f59e0b' },
+            { name: 'Social Studies', marks: 82, maxMarks: 100, grade: 'A', color: '#8b5cf6' },
+            { name: 'Hindi', marks: 75, maxMarks: 100, grade: 'B', color: '#ef4444' }
+          ],
+          principalRemark: 'Outstanding performance this term. Keep up the excellent work!',
+          teacherRemark: 'Very diligent student. Shows consistent improvement in all subjects.'
+        };
+
+        container.innerHTML = `
+          <div class="card">
+            <div class="card-header">
+              <h3>${reportCard.studentName}</h3>
+              <span style="font-size:13px;color:var(--text-secondary);">Term Report Card</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0;">
+              <div class="quick-stat">
+                <div class="label">Overall Percentage</div>
+                <div class="value">${reportCard.overallPercentage}%</div>
+              </div>
+              <div class="quick-stat">
+                <div class="label">Rank</div>
+                <div class="value">#${reportCard.rank}</div>
+              </div>
+              <div class="quick-stat">
+                <div class="label">Attendance</div>
+                <div class="value">${reportCard.attendancePercentage}%</div>
+              </div>
+            </div>
+
+            <h4 style="margin: 16px 0 12px; font-size: 14px;">Subject Scores</h4>
+            <div class="report-card-grid">
+              ${reportCard.subjects.map(subj => `
+                <div class="subject-score" style="border-left-color: ${subj.color};">
+                  <div class="name">${subj.name}</div>
+                  <div class="marks">
+                    <span>Marks:</span>
+                    <span class="marks-val">${subj.marks}/${subj.maxMarks}</span>
+                  </div>
+                  <div class="grade">Grade: ${subj.grade}</div>
+                </div>
+              `).join('')}
+            </div>
+
+            <h4 style="margin: 16px 0 12px; font-size: 14px;">Remarks</h4>
+            <div class="remarks-box">
+              <div style="margin-bottom: 12px;">
+                <strong>Principal's Remark:</strong><br>
+                ${reportCard.principalRemark}
+              </div>
+              <div>
+                <strong>Teacher's Remark:</strong><br>
+                ${reportCard.teacherRemark}
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        console.error(err);
+        document.getElementById('reportcardContainer').innerHTML = '<div class="card"><p>Failed to load report card</p></div>';
+      }
+    }
+
+    document.getElementById('reportcardChildSelect')?.addEventListener('change', loadReportCard);
 
     // ============================================================
     // DAY PLANNER
@@ -374,8 +715,7 @@
       } catch (err) { alert(err?.detail || 'Failed to add entry'); }
     }
 
-    // Reload planner when child changes
-    document.getElementById('plannerChildSelect').addEventListener('change', loadPlanner);
+    document.getElementById('plannerChildSelect')?.addEventListener('change', loadPlanner);
 
     // ============================================================
     // FOCUS AUDIT
@@ -463,7 +803,7 @@
       } catch (err) { alert(err?.detail || 'Failed to update'); }
     }
 
-    document.getElementById('focusChildSelect').addEventListener('change', loadFocusAudit);
+    document.getElementById('focusChildSelect')?.addEventListener('change', loadFocusAudit);
 
     // ============================================================
     // CONSENT
@@ -509,7 +849,19 @@
       try {
         const data = await api.getParentNotifications();
         const container = document.getElementById('notificationsList');
-        container.innerHTML = data.notifications.map(n => `
+        const notifs = data.notifications || [];
+
+        // Update badge
+        const unreadCount = notifs.filter(n => !n.read).length;
+        const badge = document.getElementById('notifBadge');
+        if (unreadCount > 0) {
+          badge.textContent = unreadCount;
+          badge.style.display = 'inline-flex';
+        } else {
+          badge.style.display = 'none';
+        }
+
+        container.innerHTML = notifs.map(n => `
           <div class="card" style="${n.read ? 'opacity: 0.7' : ''}">
             <div class="card-header">
               <h3>${n.title}</h3>
