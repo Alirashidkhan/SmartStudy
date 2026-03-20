@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartStudy â Teacher Dashboard</title>
+  
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="logo">SmartStudy</div>
+      <div class="subtitle">Teacher Portal</div>
+      <nav>
+        <a href="#" class="active" data-section="dashboard">ð Dashboard</a>
+        <a href="#" data-section="content">ð Content</a>
+        <a href="#" data-section="mcq-review">â MCQ Review</a>
+        <a href="#" data-section="analytics">ð Class Analytics</a>
+        <a href="#" data-section="doubts">â Student Doubts</a>
+      </nav>
+      <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
+    </aside>
+
+    <main class="main-content">
+      <!-- Dashboard -->
+      <section id="section-dashboard">
+        <div class="page-header"><h1>Teacher Dashboard</h1></div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="label">Pending MCQ Reviews</div><div class="value" id="pendingMcqs">--</div></div>
+          <div class="stat-card"><div class="label">Total Content</div><div class="value" id="totalContent">--</div></div>
+          <div class="stat-card"><div class="label">Unresolved Doubts</div><div class="value" id="unresolvedDoubts">--</div></div>
+          <div class="stat-card"><div class="label">Avg Class SIP</div><div class="value" id="avgClassSip">--</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>Class Performance Summary</h3></div>
+          <table>
+            <thead><tr><th>Subject</th><th>Students</th><th>Avg SIP</th></tr></thead>
+            <tbody id="classPerformance"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Content Management -->
+      <section id="section-content" style="display:none">
+        <div class="page-header">
+          <h1>Content Management</h1>
+          <button class="btn btn-primary" onclick="showUploadForm()">+ Upload Content</button>
+        </div>
+        <div class="card" id="uploadForm" style="display:none">
+          <h3 style="margin-bottom: 16px">Upload Learning Content</h3>
+          <div class="form-group"><label>Title</label><input type="text" id="contentTitle" placeholder="Chapter 5: Photosynthesis"></div>
+          <div class="form-group"><label>Type</label><select id="contentType"><option value="pdf">PDF</option><option value="html">HTML</option><option value="video">Video</option><option value="text">Text</option></select></div>
+          <div class="form-group"><label>Source URL (optional)</label><input type="url" id="contentUrl" placeholder="https://..."></div>
+          <div class="form-group"><label>Subject ID</label><input type="number" id="contentSubject" min="1"></div>
+          <div class="form-group"><label>Class ID</label><input type="number" id="contentClass" min="1"></div>
+          <button class="btn btn-primary" onclick="uploadContent()">Upload</button>
+          <button class="btn btn-outline" onclick="document.getElementById('uploadForm').style.display='none'">Cancel</button>
+        </div>
+        <div class="card">
+          <table>
+            <thead><tr><th>Title</th><th>Type</th><th>Ctatus</th><th>Created</th></tr></thead>
+            <tbody id="contentList"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- MCQ Review -->
+      <section id="section-mcq-review" style="display:none">
+        <div class="page-header"><h1>MCQ Review Queue</h1></div>
+        <div id="mcqReviewList"></div>
+      </section>
+
+      <!-- Analytics -->
+      <section id="section-analytics" style="display:none">
+        <div class="page-header"><h1>Class Analytics</h1></div>
+        <div class="card">
+          <div class="form-group"><label>Subject ID</label><input type="number" id="analyticsSubject" min="1" value="1"></div>
+          <button class="btn btn-primary" onclick="loadAnalytics()">Load Analytics</button>
+        </div>
+        <div id="analyticsContainer"></div>
+      </section>
+
+      <!-- Student Doubts -->
+      <section id="section-doubts" style="display:none">
+        <div class="page-header"><h1>Escalated Student Doubts</h1></div>
+        <div id="teacherDoubtsList"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/mock-api.js"></script>
+  <script>
+    // Navigation
+    document.querySelectorAll('[data-section]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = link.dataset.section;
+        document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+        document.getElementById(`section-${section}`).style.display = 'block';
+        document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+        link.classList.add('active');
+      });
+    });
+
+    async function handleLogout() {
+      try { await api.logout(); } catch {}
+      window.location.href = 'index.html';
+    }
+
+    function showUploadForm() { document.getElementById('uploadForm').style.display = 'block'; }
+
+    async function loadDashboard() {
+      try {
+        const data = await api.teacherDashboard();
+        document.getElementById('pendingMcqs').textContent = data.pendingMcqReviews;
+        document.getElementById('totalContent').textContent = data.totalContent;
+        document.getElementById('unresolvedDoubts').textContent = data.unresolvedDoubts;
+
+        const perf = data.classPerformance;
+        if (perf.length > 0) {
+          const avgSip = (perf.reduce((s, p) => s + parseFloat(p.avg_sip || 0), 0) / perf.length).toFixed(1);
+          document.getElementById('avgClassSip').textContent = avgSip;
+        }
+
+        document.getElementById('classPerformance').innerHTML = perf.map(p => `
+          <tr><td>Subject ${p.subject_id}</td><td>${p.student_count}</td><td>${parseFloat(p.avg_sip || 0).toFixed(1)}</td></tr>
+        `).join('') || '<tr><td colspan="3" style="text-align:center">No data yet</td></tr>';
+      } catch (err) { console.error(err); }
+    }
+
+    async function uploadContent() {
+      try {
+        await api.uploadContent({
+          title: document.getElementById('contentTitle').value,
+          contentType: document.getElementById('contentType').value,
+          sourceUrl: document.getElementById('contentUrl').value || undefined,
+          subjectId: parseInt(document.getElementById('contentSubject').value),
+          classId: parseInt(document.getElementById('contentClass').value),
+        });
+        alert('Content uploaded successfully!');
+        document.getElementById('uploadForm').style.display = 'none';
+      } catch (err) { alert(err?.detail || 'Upload failed'); }
+    }
+
+    async function loadAnalytics() {
+      const subjectId = document.getElementById('analyticsSubject').value;
+      try {
+        const data = await api.getClassAnalytics(1, subjectId);
+        document.getElementById('analyticsContainer').innerHTML = `
+          <div class="stats-grid" style="margin-top:16px">
+            <div class="stat-card"><div class="label">Excellent (80+)</div><div class="value">${data.sipDistribution?.excellent || 0}</div></div>
+            <div class="stat-card"><div class="label">Good (60-80)</div><div class="value">${data.sipDistribution?.good || 0}</div></div>
+            <div class="stat-card"><div class="label">Average (40-60)</div><div class="value">${data.sipDistribution?.average || 0}</div></div>
+            <div class="stat-card"><div class="label">Needs Help (<40)</div><div class="value">${data.sipDistribution?.needs_improvement || 0}</div></div>
+          </div>
+          <div class="card"><div class="card-header"><h3>Weakest Topics</h3></div>
+            <table><thead><tr><th>Topic</th><th>Avg SIP</th></tr></thead>
+            <tbody>${(data.weakTopics || []).map(t => `<tr><td>${t.topic_name}</td><td>${t.avg_sip}</td></tr>`).join('')}</tbody></table>
+          </div>
+        `;
+      } catch (err) { alert(err?.detail || 'Failed to load analytics'); }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>
