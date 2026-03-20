@@ -213,9 +213,12 @@
         link.classList.add('active');
 
         // Load section-specific data
+        if (section === 'content') loadContent();
+        if (section === 'mcq-review') loadMcqReview();
         if (section === 'mcq-bank') loadMcqBank();
         if (section === 'homework') loadHomework();
         if (section === 'notifications') loadNotifications();
+        if (section === 'doubts') loadTeacherDoubts();
       });
     });
 
@@ -233,7 +236,6 @@
         const data = await api.teacherDashboard();
         document.getElementById('pendingMcqs').textContent = data.pendingMcqReviews;
         document.getElementById('totalContent').textContent = data.totalContent;
-        document.getElementById('unresolvedDoubts').textContent = data.unresolvedDoubts;
 
         // Calculate stats from mock data
         const overdue = mockHomework.filter(h => new Date(h.dueDate) < new Date()).length;
@@ -384,6 +386,73 @@
           </div>
         `;
       } catch (err) { alert(err?.detail || 'Failed to load analytics'); }
+    }
+
+    async function loadContent() {
+      try {
+        const data = await api.getContent();
+        const items = data.content || [];
+        document.getElementById('contentList').innerHTML = items.length > 0
+          ? items.map(c => `<tr><td>${c.title}</td><td>${c.content_type}</td><td>${c.status || 'active'}</td><td>${c.created_at ? new Date(c.created_at).toLocaleDateString() : '--'}</td></tr>`).join('')
+          : '<tr><td colspan="4" style="text-align:center;color:#999;">No content uploaded yet. Click "+ Upload Content" to get started.</td></tr>';
+      } catch (err) {
+        document.getElementById('contentList').innerHTML = '<tr><td colspan="4" style="text-align:center;color:#999;">No content available</td></tr>';
+      }
+    }
+
+    async function loadMcqReview() {
+      try {
+        const data = await api.getMcqReviewQueue();
+        const questions = data.questions || [];
+        const container = document.getElementById('mcqReviewList');
+        if (questions.length === 0) {
+          container.innerHTML = '<div class="card"><p style="color:#999;">No MCQs pending review</p></div>';
+          return;
+        }
+        container.innerHTML = questions.map(q => `
+          <div class="card" style="margin-bottom:12px;">
+            <h4 style="margin:0 0 8px 0;">${q.question_text}</h4>
+            <p style="font-size:13px;color:#666;margin:0 0 8px 0;">Topic: ${q.topic_name} | Source: ${q.source} ${q.ai_model ? '(' + q.ai_model + ')' : ''}</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+              ${q.options.map(opt => `<div style="padding:8px 12px;border:1px solid #e5e7eb;border-radius:6px;${opt.key === q.correct_option ? 'background:#dcfce7;border-color:#86efac;' : ''}"><strong>${opt.key}.</strong> ${opt.text}</div>`).join('')}
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-sm btn-success" onclick="reviewMcq(${q.id}, 'approved')">Approve</button>
+              <button class="btn btn-sm btn-outline" onclick="reviewMcq(${q.id}, 'rejected')">Reject</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        document.getElementById('mcqReviewList').innerHTML = '<div class="card"><p>Failed to load MCQ review queue</p></div>';
+      }
+    }
+
+    async function reviewMcq(id, status) {
+      try {
+        await api.reviewMcq(id, { status });
+        alert('MCQ ' + status + '!');
+        loadMcqReview();
+      } catch (err) { alert('Failed to review'); }
+    }
+
+    async function loadTeacherDoubts() {
+      try {
+        const data = await api.getEscalatedDoubts();
+        const doubts = data.doubts || [];
+        const container = document.getElementById('teacherDoubtsList');
+        if (doubts.length === 0) {
+          container.innerHTML = '<div class="card"><p style="color:#999;">No escalated doubts</p></div>';
+          return;
+        }
+        container.innerHTML = doubts.map(d => `
+          <div class="card" style="margin-bottom:12px;">
+            <h4 style="margin:0 0 8px 0;">${d.question}</h4>
+            <p style="font-size:13px;color:#666;margin:0;">Student ID: ${d.student_id} | Status: ${d.status} | Date: ${new Date(d.created_at).toLocaleDateString()}</p>
+          </div>
+        `).join('');
+      } catch (err) {
+        document.getElementById('teacherDoubtsList').innerHTML = '<div class="card"><p>Failed to load doubts</p></div>';
+      }
     }
 
     loadDashboard();
