@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SmartStudy — Teacher Dashboard</title>
-  
-  
+
+
   <link rel="stylesheet" href="css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -18,7 +18,10 @@
         <a href="#" class="active" data-section="dashboard">📊 Dashboard</a>
         <a href="#" data-section="content">📚 Content</a>
         <a href="#" data-section="mcq-review">✅ MCQ Review</a>
+        <a href="#" data-section="mcq-bank">📝 MCQ Bank</a>
+        <a href="#" data-section="homework">📋 Homework</a>
         <a href="#" data-section="analytics">📈 Class Analytics</a>
+        <a href="#" data-section="notifications">🔔 Notifications</a>
         <a href="#" data-section="doubts">❓ Student Doubts</a>
       </nav>
       <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
@@ -31,7 +34,9 @@
         <div class="stats-grid">
           <div class="stat-card"><div class="label">Pending MCQ Reviews</div><div class="value" id="pendingMcqs">--</div></div>
           <div class="stat-card"><div class="label">Total Content</div><div class="value" id="totalContent">--</div></div>
-          <div class="stat-card"><div class="label">Unresolved Doubts</div><div class="value" id="unresolvedDoubts">--</div></div>
+          <div class="stat-card"><div class="label">Pending Homework</div><div class="value" id="pendingHomework">--</div></div>
+          <div class="stat-card"><div class="label">Notifications</div><div class="value" id="notificationCount">--</div></div>
+          <div class="stat-card"><div class="label">MCQ Bank Size</div><div class="value" id="mcqBankSize">--</div></div>
           <div class="stat-card"><div class="label">Avg Class SIP</div><div class="value" id="avgClassSip">--</div></div>
         </div>
 
@@ -62,7 +67,7 @@
         </div>
         <div class="card">
           <table>
-            <thead><tr><th>Title</th><th>Type</th><th>Ctatus</th><th>Created</th></tr></thead>
+            <thead><tr><th>Title</th><th>Type</th><th>Status</th><th>Created</th></tr></thead>
             <tbody id="contentList"></tbody>
           </table>
         </div>
@@ -72,6 +77,78 @@
       <section id="section-mcq-review" style="display:none">
         <div class="page-header"><h1>MCQ Review Queue</h1></div>
         <div id="mcqReviewList"></div>
+      </section>
+
+      <!-- MCQ Bank -->
+      <section id="section-mcq-bank" style="display:none">
+        <div class="page-header"><h1>MCQ Bank</h1></div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="label">Total MCQs</div><div class="value" id="bankTotalMcqs">--</div></div>
+          <div class="stat-card"><div class="label">Approved</div><div class="value" id="bankApproved">--</div></div>
+          <div class="stat-card"><div class="label">Pending Review</div><div class="value" id="bankPending">--</div></div>
+          <div class="stat-card"><div class="label">Avg Accuracy</div><div class="value" id="bankAvgAccuracy">--</div></div>
+        </div>
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Question</th>
+                <th>Subject</th>
+                <th>Topic</th>
+                <th>Difficulty</th>
+                <th>Times Attempted</th>
+                <th>Accuracy Rate</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="mcqBankList"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Homework Management -->
+      <section id="section-homework" style="display:none">
+        <div class="page-header">
+          <h1>Homework Management</h1>
+          <button class="btn btn-primary" onclick="showHomeworkForm()">+ Create Assignment</button>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="label">Total Assigned</div><div class="value" id="hwTotalAssigned">--</div></div>
+          <div class="stat-card"><div class="label">Avg Completion</div><div class="value" id="hwAvgCompletion">--</div></div>
+          <div class="stat-card"><div class="label">Overdue</div><div class="value" id="hwOverdue">--</div></div>
+        </div>
+        <div class="card" id="homeworkForm" style="display:none">
+          <h3 style="margin-bottom: 16px">Create New Assignment</h3>
+          <div class="form-group"><label>Title</label><input type="text" id="hwTitle" placeholder="Chapter 3 Practice Problems"></div>
+          <div class="form-group"><label>Subject</label><input type="text" id="hwSubject" placeholder="Mathematics"></div>
+          <div class="form-group"><label>Class</label><input type="text" id="hwClass" placeholder="Class 10 A"></div>
+          <div class="form-group"><label>Due Date</label><input type="date" id="hwDueDate"></div>
+          <div class="form-group"><label>Type</label><select id="hwType"><option value="worksheet">Worksheet</option><option value="project">Project</option><option value="practice">Practice Problems</option><option value="essay">Essay</option></select></div>
+          <button class="btn btn-primary" onclick="createHomework()">Create</button>
+          <button class="btn btn-outline" onclick="document.getElementById('homeworkForm').style.display='none'">Cancel</button>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Assignments</h3></div>
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Subject</th>
+                <th>Class</th>
+                <th>Due Date</th>
+                <th>Submissions</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="homeworkList"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Notifications -->
+      <section id="section-notifications" style="display:none">
+        <div class="page-header"><h1>Notifications</h1></div>
+        <div id="notificationsList"></div>
       </section>
 
       <!-- Analytics -->
@@ -94,6 +171,37 @@
 
   <script src="js/mock-api.js"></script>
   <script>
+    // Mock MCQ Bank Data
+    const mockMcqBank = [
+      { id: 1, question: 'What is the chemical formula for water?', subject: 'Chemistry', topic: 'Basic Compounds', difficulty: 'Easy', timesAttempted: 245, accuracy: 92.5, status: 'approved' },
+      { id: 2, question: 'Which planet is known as the Red Planet?', subject: 'Science', topic: 'Astronomy', difficulty: 'Easy', timesAttempted: 312, accuracy: 88.7, status: 'approved' },
+      { id: 3, question: 'What is the process by which plants make food?', subject: 'Biology', topic: 'Photosynthesis', difficulty: 'Medium', timesAttempted: 187, accuracy: 76.4, status: 'approved' },
+      { id: 4, question: 'Define acceleration in physics terms.', subject: 'Physics', topic: 'Motion', difficulty: 'Medium', timesAttempted: 142, accuracy: 71.2, status: 'pending' },
+      { id: 5, question: 'What is the mitochondria function in cells?', subject: 'Biology', topic: 'Cell Biology', difficulty: 'Medium', timesAttempted: 198, accuracy: 68.9, status: 'approved' },
+      { id: 6, question: 'Solve: 15x + 7 = 52', subject: 'Mathematics', topic: 'Algebra', difficulty: 'Easy', timesAttempted: 267, accuracy: 85.3, status: 'approved' },
+      { id: 7, question: 'Explain the law of conservation of energy.', subject: 'Physics', topic: 'Energy', difficulty: 'Hard', timesAttempted: 98, accuracy: 62.1, status: 'pending' },
+      { id: 8, question: 'What are the causes of climate change?', subject: 'Environmental Science', topic: 'Climate', difficulty: 'Medium', timesAttempted: 156, accuracy: 74.3, status: 'approved' },
+      { id: 9, question: 'Calculate the area of a circle with radius 5.', subject: 'Mathematics', topic: 'Geometry', difficulty: 'Easy', timesAttempted: 289, accuracy: 91.6, status: 'approved' },
+      { id: 10, question: 'What is quantum entanglement?', subject: 'Physics', topic: 'Quantum Mechanics', difficulty: 'Hard', timesAttempted: 65, accuracy: 45.8, status: 'rejected' }
+    ];
+
+    // Mock Homework Data
+    const mockHomework = [
+      { id: 1, title: 'Chapter 5 Practice Problems', subject: 'Mathematics', class: 'Class 10A', dueDate: '2026-03-28', totalStudents: 42, submitted: 38, pending: 4, graded: 35 },
+      { id: 2, title: 'Photosynthesis Worksheet', subject: 'Biology', class: 'Class 9B', dueDate: '2026-03-25', totalStudents: 38, submitted: 32, pending: 6, graded: 28 },
+      { id: 3, title: 'Physics Lab Report', subject: 'Physics', class: 'Class 10A', dueDate: '2026-03-22', totalStudents: 42, submitted: 40, pending: 2, graded: 40 },
+      { id: 4, title: 'History Essay', subject: 'History', class: 'Class 9A', dueDate: '2026-03-20', totalStudents: 35, submitted: 28, pending: 7, graded: 25 }
+    ];
+
+    // Mock Notifications Data
+    const mockNotifications = [
+      { id: 1, title: 'New Student Doubt', message: 'Raj Kumar asked a question about Chapter 3 Algebra', timestamp: '2 minutes ago', read: false },
+      { id: 2, title: 'Assignment Submitted', message: '38 students have submitted the Physics Lab Report', timestamp: '1 hour ago', read: false },
+      { id: 3, title: 'MCQ Pending Review', message: 'You have 3 new MCQs awaiting approval', timestamp: '3 hours ago', read: true },
+      { id: 4, title: 'Low Performance Alert', message: 'Topic: Quadratic Equations - 12 students need help', timestamp: '5 hours ago', read: true },
+      { id: 5, title: 'Homework Reminder', message: 'History Essay due in 1 day', timestamp: 'Yesterday', read: true }
+    ];
+
     // Navigation
     document.querySelectorAll('[data-section]').forEach(link => {
       link.addEventListener('click', (e) => {
@@ -103,6 +211,11 @@
         document.getElementById(`section-${section}`).style.display = 'block';
         document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
         link.classList.add('active');
+
+        // Load section-specific data
+        if (section === 'mcq-bank') loadMcqBank();
+        if (section === 'homework') loadHomework();
+        if (section === 'notifications') loadNotifications();
       });
     });
 
@@ -113,12 +226,21 @@
 
     function showUploadForm() { document.getElementById('uploadForm').style.display = 'block'; }
 
+    function showHomeworkForm() { document.getElementById('homeworkForm').style.display = 'block'; }
+
     async function loadDashboard() {
       try {
         const data = await api.teacherDashboard();
         document.getElementById('pendingMcqs').textContent = data.pendingMcqReviews;
         document.getElementById('totalContent').textContent = data.totalContent;
         document.getElementById('unresolvedDoubts').textContent = data.unresolvedDoubts;
+
+        // Calculate stats from mock data
+        const overdue = mockHomework.filter(h => new Date(h.dueDate) < new Date()).length;
+        const totalPending = mockHomework.reduce((sum, h) => sum + h.pending, 0);
+        document.getElementById('pendingHomework').textContent = totalPending;
+        document.getElementById('notificationCount').textContent = mockNotifications.filter(n => !n.read).length;
+        document.getElementById('mcqBankSize').textContent = mockMcqBank.length;
 
         const perf = data.classPerformance;
         if (perf.length > 0) {
@@ -130,6 +252,82 @@
           <tr><td>Subject ${p.subject_id}</td><td>${p.student_count}</td><td>${parseFloat(p.avg_sip || 0).toFixed(1)}</td></tr>
         `).join('') || '<tr><td colspan="3" style="text-align:center">No data yet</td></tr>';
       } catch (err) { console.error(err); }
+    }
+
+    function loadMcqBank() {
+      const stats = {
+        total: mockMcqBank.length,
+        approved: mockMcqBank.filter(m => m.status === 'approved').length,
+        pending: mockMcqBank.filter(m => m.status === 'pending').length,
+        avgAccuracy: (mockMcqBank.reduce((sum, m) => sum + m.accuracy, 0) / mockMcqBank.length).toFixed(1)
+      };
+
+      document.getElementById('bankTotalMcqs').textContent = stats.total;
+      document.getElementById('bankApproved').textContent = stats.approved;
+      document.getElementById('bankPending').textContent = stats.pending;
+      document.getElementById('bankAvgAccuracy').textContent = stats.avgAccuracy + '%';
+
+      const statusColors = {
+        'approved': '#10b981',
+        'pending': '#f59e0b',
+        'rejected': '#ef4444'
+      };
+
+      document.getElementById('mcqBankList').innerHTML = mockMcqBank.map(m => `
+        <tr>
+          <td>${m.question.substring(0, 50)}...</td>
+          <td>${m.subject}</td>
+          <td>${m.topic}</td>
+          <td>${m.difficulty}</td>
+          <td>${m.timesAttempted}</td>
+          <td>${m.accuracy}%</td>
+          <td><span style="color: ${statusColors[m.status]}; font-weight: 500">${m.status.charAt(0).toUpperCase() + m.status.slice(1)}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function loadHomework() {
+      const stats = {
+        total: mockHomework.length,
+        avgCompletion: Math.round((mockHomework.reduce((sum, h) => sum + (h.submitted / h.totalStudents), 0) / mockHomework.length) * 100),
+        overdue: mockHomework.filter(h => new Date(h.dueDate) < new Date()).length
+      };
+
+      document.getElementById('hwTotalAssigned').textContent = stats.total;
+      document.getElementById('hwAvgCompletion').textContent = stats.avgCompletion + '%';
+      document.getElementById('hwOverdue').textContent = stats.overdue;
+
+      document.getElementById('homeworkList').innerHTML = mockHomework.map(h => {
+        const completionPercent = Math.round((h.submitted / h.totalStudents) * 100);
+        const isOverdue = new Date(h.dueDate) < new Date();
+        return `
+          <tr>
+            <td>${h.title}</td>
+            <td>${h.subject}</td>
+            <td>${h.class}</td>
+            <td style="color: ${isOverdue ? '#ef4444' : '#000'}">${h.dueDate}</td>
+            <td>${h.submitted}/${h.totalStudents}</td>
+            <td>
+              <div style="background: #e5e7eb; height: 8px; border-radius: 4px; width: 100px; overflow: hidden;">
+                <div style="background: #3b82f6; height: 100%; width: ${completionPercent}%"></div>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function loadNotifications() {
+      document.getElementById('notificationsList').innerHTML = mockNotifications.map(n => `
+        <div style="padding: 16px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 12px; background: ${n.read ? '#fff' : '#f0f9ff'}">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px">
+            <h4 style="margin: 0; color: #1f2937">${n.title}</h4>
+            <span style="font-size: 12px; color: #999">${n.timestamp}</span>
+          </div>
+          <p style="margin: 0; color: #4b5563; font-size: 14px">${n.message}</p>
+          ${!n.read ? '<span style="display: inline-block; background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-top: 8px">New</span>' : ''}
+        </div>
+      `).join('');
     }
 
     async function uploadContent() {
@@ -144,6 +342,29 @@
         alert('Content uploaded successfully!');
         document.getElementById('uploadForm').style.display = 'none';
       } catch (err) { alert(err?.detail || 'Upload failed'); }
+    }
+
+    async function createHomework() {
+      try {
+        const title = document.getElementById('hwTitle').value;
+        const subject = document.getElementById('hwSubject').value;
+        const hwClass = document.getElementById('hwClass').value;
+        const dueDate = document.getElementById('hwDueDate').value;
+        const type = document.getElementById('hwType').value;
+
+        if (!title || !subject || !hwClass || !dueDate) {
+          alert('Please fill all fields');
+          return;
+        }
+
+        // Mock creation - in real app would call api
+        alert('Assignment created successfully!');
+        document.getElementById('homeworkForm').style.display = 'none';
+        document.getElementById('hwTitle').value = '';
+        document.getElementById('hwSubject').value = '';
+        document.getElementById('hwClass').value = '';
+        document.getElementById('hwDueDate').value = '';
+      } catch (err) { alert(err?.detail || 'Creation failed'); }
     }
 
     async function loadAnalytics() {
