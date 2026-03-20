@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartStudy â Student Dashboard</title>
+  
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">SmartStudy</div>
+      <div class="subtitle">Learning Intelligence Platform</div>
+      <nav>
+        <a href="#" class="active" data-section="dashboard">ð Dashboard</a>
+        <a href="#" data-section="practice">ð MCQ Practice</a>
+        <a href="#" data-section="sip">ð¯ My SIP Scores</a>
+        <a href="#" data-section="revisions">ð Revisions</a>
+        <a href="#" data-section="doubts">â Ask a Doubt</a>
+        <a href="#" data-section="plans">ð Study Plans</a>
+        <a href="#" data-section="achievements">ð Achievements</a>
+      </nav>
+      <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Dashboard Section -->
+      <section id="section-dashboard">
+        <div class="page-header">
+          <h1>Welcome back!</h1>
+          <div class="streak-badge" id="streakBadge">ð¥ 0 day streak</div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card">
+            <div class="label">Overall SIP</div>
+            <div class="value" id="overallSip">--</div>
+            <div class="change" id="sipTrend">Loading...</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Study Streak</div>
+            <div class="value" id="currentStreak">0</div>
+            <div class="change">days in a row</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Total Points</div>
+            <div class="value" id="totalPoints">0</div>
+            <div class="change" id="levelBadge">Level 1</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Pending Revisions</div>
+            <div class="value" id="pendingRevisions">0</div>
+            <div class="change">due this week</div>
+          </div>
+        </div>
+
+        <!-- Upcoming Revisions -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Upcoming Revisions</h3>
+            <a href="#" data-section="revisions" class="btn btn-sm btn-outline">View All</a>
+          </div>
+          <table>
+            <thead><tr><th>Topic</th><th>Due Date</th><th>Revision #</th><th>Action</th></tr></thead>
+            <tbody id="revisionsList"></tbody>
+          </table>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card">
+          <div class="card-header"><h3>Recent Study Sessions</h3></div>
+          <table>
+            <thead><tr><th>Subject</th><th>Date</th><th>Duration</th><th>Status</th></tr></thead>
+            <tbody id="activityList"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- MCQ Practice Section -->
+      <section id="section-practice" style="display:none">
+        <div class="page-header"><h1>MCQ Practice</h1></div>
+        <div class="card">
+          <div class="form-group">
+            <label>Select Topic</label>
+            <select id="practiceTopic"><option>Select a topic...</option></select>
+          </div>
+          <button class="btn btn-primary" onclick="loadPractice()">Start Practice (10 Questions)</button>
+        </div>
+        <div id="mcqContainer"></div>
+      </section>
+
+      <!-- SIP Scores Section -->
+      <section id="section-sip" style="display:none">
+        <div class="page-header"><h1>Subject Intelligence Profile</h1></div>
+        <div id="sipContainer" class="loading"><div class="spinner"></div>Loading scores...</div>
+      </section>
+
+      <!-- Revisions Section -->
+      <section id="section-revisions" style="display:none">
+        <div class="page-header"><h1>Spaced Repetition Schedule</h1></div>
+        <div id="revisionsContainer" class="loading"><div class="spinner"></div>Loading...</div>
+      </section>
+
+      <!-- Doubts Section -->
+      <section id="section-doubts" style="display:none">
+        <div class="page-header"><h1>Ask a Doubt</h1></div>
+        <div class="card">
+          <div class="form-group">
+            <label>Subject</label>
+            <select id="doubtSubject"><option>Select subject...</option></select>
+          </div>
+          <div class="form-group">
+            <label>Your Question</label>
+            <textarea id="doubtText" rows="4" placeholder="Type your doubt here..."></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="submitDoubt()">Ask AI</button>
+        </div>
+        <div class="card" style="margin-top: 20px">
+          <div class="card-header"><h3>Past Doubts</h3></div>
+          <div id="doubtsList"></div>
+        </div>
+      </section>
+
+      <!-- Study Plans Section -->
+      <section id="section-plans" style="display:none">
+        <div class="page-header"><h1>Study Plans</h1></div>
+        <div id="plansContainer" class="loading"><div class="spinner"></div>Loading...</div>
+      </section>
+
+      <!-- Achievements Section -->
+      <section id="section-achievements" style="display:none">
+        <div class="page-header"><h1>Achievements & Gamification</h1></div>
+        <div id="achievementsContainer" class="loading"><div class="spinner"></div>Loading...</div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/mock-api.js"></script>
+  <script>
+    // ---- Navigation ----
+    document.querySelectorAll('[data-section]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = link.dataset.section;
+        document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+        document.getElementById(`section-${section}`).style.display = 'block';
+        document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+        document.querySelector(`.sidebar nav a[data-section="${section}"]`)?.classList.add('active');
+      });
+    });
+
+    async function handleLogout() {
+      try { await api.logout(); } catch {}
+      window.location.href = 'index.html';
+    }
+
+    // ---- Load Dashboard ----
+    async function loadDashboard() {
+      try {
+        const data = await api.studentDashboard();
+
+        // Streak
+        const streak = data.streak;
+        document.getElementById('currentStreak').textContent = streak.current_streak;
+        document.getElementById('streakBadge').textContent = `ð¥ ${streak.current_streak} day streak`;
+        document.getElementById('totalPoints').textContent = streak.total_points.toLocaleString();
+        document.getElementById('levelBadge').textContent = `Level ${streak.level}`;
+
+        // SIP
+        if (data.sip.length > 0) {
+          const avgSip = (data.sip.reduce((s, r) => s + parseFloat(r.composite_sip), 0) / data.sip.length).toFixed(1);
+          document.getElementById('overallSip').textContent = avgSip;
+          document.getElementById('sipTrend').textContent = `Across ${data.sip.length} subjects`;
+        }
+
+        // Revisions
+        document.getElementById('pendingRevisions').textContent = data.upcomingRevisions.length;
+        const revList = document.getElementById('revisionsList');
+        revList.innerHTML = data.upcomingRevisions.slice(0, 5).map(r => `
+          <tr>
+            <td>${r.topic_name}</td>
+            <td>${new Date(r.scheduled_date).toLocaleDateString()}</td>
+            <td>Revision ${r.revision_number}</td>
+            <td><button class="btn btn-sm btn-success" onclick="completeRevision(${r.id})">Complete</button></td>
+          </tr>
+        `).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--text-secondary)">No pending revisions</td></tr>';
+
+        // Activity
+        const actList = document.getElementById('activityList');
+        actList.innerHTML = data.recentActivity.map(a => `
+          <tr>
+            <td>Subject ${a.subject_id}</td>
+            <td>${new Date(a.start_time).toLocaleDateString()}</td>
+            <td>${Math.round(a.active_seconds / 60)} min</td>
+            <td>${a.completed ? '<span class="sip-badge sip-excellent">Completed</span>' : '<span class="sip-badge sip-average">In Progress</span>'}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--text-secondary)">No recent activity</td></tr>';
+      } catch (err) {
+        console.error('Dashboard load failed:', err);
+      }
+    }
+
+    async function completeRevision(id) {
+      try {
+        const result = await api.completeRevision(id);
+        alert(`Revision completed! +${result.pointsEarned} points`);
+        loadDashboard();
+      } catch (err) {
+        alert(err?.detail || 'Failed to complete revision');
+      }
+    }
+
+    // Initialize
+    loadDashboard();
+  </script>
+</body>
+</html>
