@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartStudy â Parent Dashboard</title>
+  
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Planner-specific styles */
+    .planner-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 16px 0; }
+    .planner-day { border: 1px solid var(--border); border-radius: 8px; min-height: 200px; padding: 8px; background: var(--surface); }
+    .planner-day-header { font-weight: 600; font-size: 13px; text-align: center; padding: 6px; background: var(--primary); color: white; border-radius: 6px; margin-bottom: 8px; }
+    .planner-entry { font-size: 12px; padding: 6px 8px; border-radius: 6px; margin-bottom: 4px; cursor: pointer; display: flex; gap: 4px; align-items: center; }
+    .planner-entry:hover { opacity: 0.8; }
+    .planner-entry .time { font-weight: 600; white-space: nowrap; }
+    .planner-entry .title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .planner-add-btn { width: 100%; border: 1px dashed var(--border); background: none; border-radius: 6px; padding: 4px; font-size: 12px; color: var(--text-secondary); cursor: pointer; margin-top: 4px; }
+    .planner-add-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .focus-score { display: inline-block; padding: 2px 10px; border-radius: 12px; font-weight: 600; font-size: 13px; }
+    .focus-good { background: #dcfce7; color: #166534; }
+    .focus-ok { background: #fef3c7; color: #92400e; }
+    .focus-bad { background: #fee2e2; color: #991b1b; }
+    .warning-chip { display: inline-block; padding: 4px 10px; border-radius: 12px; background: #fef3c7; color: #92400e; font-size: 12px; margin: 2px; }
+    .insight-bar { height: 8px; border-radius: 4px; margin: 4px 0; }
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: white; border-radius: 12px; padding: 24px; width: 90%; max-width: 480px; max-height: 80vh; overflow-y: auto; }
+    .modal h3 { margin-bottom: 16px; }
+    @media (max-width: 900px) { .planner-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="logo">SmartStudy</div>
+      <div class="subtitle">Parent Portal</div>
+      <nav>
+        <a href="#" class="active" data-section="dashboard">ð My Children</a>
+        <a href="#" data-section="planner">ð Day Planner</a>
+        <a href="#" data-section="focus">ð¯ Focus Audit</a>
+        <a href="#" data-section="consent">ð Privacy & Consent</a>
+        <a href="#" data-section="notifications">ð Notifications</a>
+      </nav>
+      <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
+    </aside>
+
+    <main class="main-content">
+
+      <!-- Dashboard -->
+      <section id="section-dashboard">
+        <div class="page-header"><h1>My Children's Progress</h1></div>
+        <div id="childrenContainer" class="loading"><div class="spinner"></div>Loading...</div>
+      </section>
+
+      <!-- Day Planner -->
+      <section id="section-planner" style="display:none">
+        <div class="page-header">
+          <h1>Weekly Day Planner</h1>
+          <select id="plannerChildSelect" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;"></select>
+        </div>
+
+        <!-- Today's Insights -->
+        <div class="card" id="plannerInsightsCard">
+          <div class="card-header"><h3>Today's Insights</h3></div>
+          <div id="plannerInsights">Loading...</div>
+        </div>
+
+        <!-- Weekly Grid -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Weekly Schedule</h3>
+            <button class="btn btn-primary btn-sm" onclick="openAddEntryModal()">+ Add Activity</button>
+          </div>
+          <div class="planner-grid" id="plannerGrid"></div>
+        </div>
+      </section>
+
+      <!-- Focus Audit -->
+      <section id="section-focus" style="display:none">
+        <div class="page-header">
+          <h1>Focus Audit Report</h1>
+          <select id="focusChildSelect" style="padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;"></select>
+        </div>
+
+        <!-- Focus Settings -->
+        <div class="card" id="focusSettingsCard">
+          <div class="card-header"><h3>Focus Mode Settings</h3></div>
+          <div id="focusSettings"></div>
+        </div>
+
+        <!-- Focus Summary -->
+        <div class="card">
+          <div class="card-header"><h3>Focus Summary (Last 7 Days)</h3></div>
+          <div class="stats-grid" id="focusSummary">
+            <div class="stat-card"><div class="label">Avg Focus Score</div><div class="value" id="avgFocusScore">--</div></div>
+            <div class="stat-card"><div class="label">Total Violations</div><div class="value" id="totalViolations">--</div></div>
+            <div class="stat-card"><div class="label">Total Away Time</div><div class="value" id="totalAwayTime">--</div></div>
+            <div class="stat-card"><div class="label">Good Sessions</div><div class="value" id="goodSessions">--</div></div>
+          </div>
+        </div>
+
+        <!-- Session Detail -->
+        <div class="card">
+          <div class="card-header"><h3>Session-by-Session Audit</h3></div>
+          <table>
+            <thead><tr><th>Date</th><th>Duration</th><th>Violations</th><th>Away Time</th><th>Focus Score</th></tr></thead>
+            <tbody id="focusSessionList"></tbody>
+          </table>
+        </div>
+
+        <!-- Violations Log -->
+        <div class="card">
+          <div class="card-header"><h3>Violation Details</h3></div>
+          <table>
+            <thead><tr><th>Time</th><th>Type</th><th>Away Duration</th><th>Returned</th></tr></thead>
+            <tbody id="violationsList"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Consent -->
+      <section id="section-consent" style="display:none">
+        <div class="page-header"><h1>Privacy & Consent Management</h1></div>
+        <div class="card">
+          <p style="margin-bottom: 16px; color: var(--text-secondary); font-size: 14px;">
+            Under the Digital Personal Data Protection Act (DPDP) 2023, you have the right to control
+            how your child's data is processed. Manage consent settings below.
+          </p>
+          <div id="consentList"></div>
+        </div>
+      </section>
+
+      <!-- Notifications -->
+      <section id="section-notifications" style="display:none">
+        <div class="page-header"><h1>Notifications</h1></div>
+        <div id="notificationsList"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Add Entry Modal -->
+  <div class="modal-overlay" id="addEntryModal">
+    <div class="modal">
+      <h3>Add Activity</h3>
+      <div class="form-group"><label>Category</label><select id="entryCategory" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;"></select></div>
+      <div class="form-group"><label>Day</label>
+        <select id="entryDay" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;">
+          <option value="0">Sunday</option><option value="1">Monday</option><option value="2">Tuesday</option>
+          <option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option>
+          <option value="6">Saturday</option>
+        </select>
+      </div>
+      <div style="display: flex; gap: 12px;">
+        <div class="form-group" style="flex:1"><label>Start</label><input type="time" id="entryStart" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;"></div>
+        <div class="form-group" style="flex:1"><label>End</label><input type="time" id="entryEnd" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;"></div>
+      </div>
+      <div class="form-group"><label>Title (optional)</label><input type="text" id="entryTitle" placeholder="e.g. Math homework" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;"></div>
+      <div class="form-group"><label>Notes (optional)</label><textarea id="entryNotes" rows="2" placeholder="Any notes..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;"></textarea></div>
+      <div style="display: flex; gap: 8px; margin-top: 16px;">
+        <button class="btn btn-primary" onclick="saveEntry()">Save</button>
+        <button class="btn btn-outline" onclick="closeModal('addEntryModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/mock-api.js"></script>
+  <script>
+    let children = [];
+    let categories = [];
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayNamesFull = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    // Navigation
+    document.querySelectorAll('[data-section]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = link.dataset.section;
+        document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+        document.getElementById(`section-${section}`).style.display = 'block';
+        document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+        link.classList.add('active');
+
+        if (section === 'planner') loadPlanner();
+        if (section === 'focus') loadFocusAudit();
+        if (section === 'consent') loadConsents();
+        if (section === 'notifications') loadNotifications();
+      });
+    });
+
+    async function handleLogout() {
+      try { await api.logout(); } catch {}
+      window.location.href = 'index.html';
+    }
+
+    function sipBadge(score) {
+      const s = parseFloat(score);
+      if (s >= 80) return `<span class="sip-badge sip-excellent">${s.toFixed(1)}</span>`;
+      if (s >= 60) return `<span class="sip-badge sip-good">${s.toFixed(1)}</span>`;
+      if (s >= 40) return `<span class="sip-badge sip-average">${s.toFixed(1)}</span>`;
+      return `<span class="sip-badge sip-low">${s.toFixed(1)}</span>`;
+    }
+
+    function focusBadge(score) {
+      const s = parseFloat(score);
+      if (s >= 80) return `<span class="focus-score focus-good">${s.toFixed(0)}%</span>`;
+      if (s >= 50) return `<span class="focus-score focus-ok">${s.toFixed(0)}%</span>`;
+      return `<span class="focus-score focus-bad">${s.toFixed(0)}%</span>`;
+    }
+
+    function formatDuration(seconds) {
+      if (!seconds) return '0s';
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return m > 0 ? `${m}m ${s}s` : `${s}s`;
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    // ============================================================
+    // CHILDREN DASHBOARD
+    // ============================================================
+    async function loadDashboard() {
+      try {
+        const data = await api.parentDashboard();
+        children = data.children || [];
+        const container = document.getElementById('childrenContainer');
+
+        if (children.length === 0) {
+          container.innerHTML = '<div class="card"><p>No children linked to your account.</p></div>';
+          return;
+        }
+
+        // Populate child selectors
+        const options = children.map((c, i) => `<option value="${c.student.id}">${c.student.first_name} ${c.student.last_name || ''}</option>`).join('');
+        document.getElementById('plannerChildSelect').innerHTML = options;
+        document.getElementById('focusChildSelect').innerHTML = options;
+
+        container.innerHTML = children.map(child => `
+          <div class="card">
+            <div class="card-header">
+              <h3>${child.student.first_name} ${child.student.last_name || ''}</h3>
+              <div class="streak-badge">ð¥ ${child.streak.current_streak} day streak</div>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-card"><div class="label">Points</div><div class="value">${child.streak.total_points.toLocaleString()}</div><div class="change">Level ${child.streak.level}</div></div>
+              ${child.sip.map(s => `
+                <div class="stat-card">
+                  <div class="label">Subject ${s.subject_id}</div>
+                  <div class="value">${sipBadge(s.composite_sip)}</div>
+                  <div class="change ${s.trend === 'improving' ? 'positive' : s.trend === 'declining' ? 'negative' : ''}">${s.trend}</div>
+                </div>
+              `).join('')}
+            </div>
+            ${child.recentRevisions.length > 0 ? `
+              <h4 style="margin: 16px 0 8px; font-size: 14px; color: var(--text-secondary)">Recent Revisions</h4>
+              <table>
+                <thead><tr><th>Topic</th><th>Date</th><th>Status</th></tr></thead>
+                <tbody>
+                  ${child.recentRevisions.map(r => `
+                    <tr>
+                      <td>${r.topic_name}</td>
+                      <td>${new Date(r.scheduled_date).toLocaleDateString()}</td>
+                      <td><span class="sip-badge ${r.status === 'completed' ? 'sip-excellent' : 'sip-average'}">${r.status}</span></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            ` : ''}
+          </div>
+        `).join('');
+      } catch (err) {
+        document.getElementById('childrenContainer').innerHTML = '<div class="card"><p>Failed to load. Please try again.</p></div>';
+        console.error(err);
+      }
+    }
+
+    // ============================================================
+    // DAY PLANNER
+    // ============================================================
+    async function loadPlanner() {
+      const studentId = document.getElementById('plannerChildSelect').value;
+      if (!studentId) return;
+
+      // Load categories
+      try {
+        const catData = await api.getPlannerCategories();
+        categories = catData.categories || [];
+        const catSelect = document.getElementById('entryCategory');
+        catSelect.innerHTML = categories.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('');
+      } catch {}
+
+      // Load entries
+      try {
+        const data = await api.getPlannerEntries(studentId);
+        const entries = data.entries || [];
+
+        // Group by day
+        const byDay = {};
+        for (let d = 0; d < 7; d++) byDay[d] = [];
+        for (const e of entries) byDay[e.day_of_week].push(e);
+
+        const grid = document.getElementById('plannerGrid');
+        grid.innerHTML = [0,1,2,3,4,5,6].map(d => `
+          <div class="planner-day">
+            <div class="planner-day-header">${dayNames[d]}</div>
+            ${byDay[d].map(e => `
+              <div class="planner-entry" style="background: ${e.category_color}22; border-left: 3px solid ${e.category_color};"
+                   title="${e.notes || ''}">
+                <span class="time">${e.start_time.substring(0, 5)}</span>
+                <span class="title">${e.category_icon} ${e.title || e.category_name}</span>
+              </div>
+            `).join('')}
+            <button class="planner-add-btn" onclick="openAddEntryForDay(${d})">+ Add</button>
+          </div>
+        `).join('');
+      } catch (err) { console.error(err); }
+
+      // Load today's insights
+      loadPlannerInsights(studentId);
+    }
+
+    async function loadPlannerInsights(studentId) {
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const data = await api.getPlannerInsights(studentId, today);
+        const s = data.summary;
+
+        document.getElementById('plannerInsights').innerHTML = `
+          <div class="stats-grid">
+            <div class="stat-card"><div class="label">Total Planned</div><div class="value">${Math.floor(s.totalPlannedMin / 60)}h ${s.totalPlannedMin % 60}m</div></div>
+            <div class="stat-card"><div class="label">Study Time</div><div class="value">${Math.floor(s.studyMin / 60)}h ${s.studyMin % 60}m</div></div>
+            <div class="stat-card"><div class="label">Screen Time</div><div class="value">${s.screenTimeMin}m</div></div>
+            <div class="stat-card"><div class="label">Completed</div><div class="value">${s.completedCount}/${s.totalCount}</div></div>
+          </div>
+          ${data.warnings.length > 0 ? `
+            <div style="margin-top: 12px;">
+              ${data.warnings.map(w => `<span class="warning-chip">â ï¸ ${w}</span>`).join(' ')}
+            </div>
+          ` : '<div style="margin-top:8px;color:var(--success);font-size:13px;">All good for today!</div>'}
+        `;
+      } catch (err) {
+        document.getElementById('plannerInsights').innerHTML = '<p>No insights available</p>';
+      }
+    }
+
+    function openAddEntryForDay(day) {
+      document.getElementById('entryDay').value = day;
+      openModal('addEntryModal');
+    }
+
+    function openAddEntryModal() {
+      openModal('addEntryModal');
+    }
+
+    async function saveEntry() {
+      const studentId = parseInt(document.getElementById('plannerChildSelect').value);
+      try {
+        await api.createPlannerEntry({
+          studentId,
+          categoryId: parseInt(document.getElementById('entryCategory').value),
+          dayOfWeek: parseInt(document.getElementById('entryDay').value),
+          startTime: document.getElementById('entryStart').value,
+          endTime: document.getElementById('entryEnd').value,
+          title: document.getElementById('entryTitle').value || undefined,
+          notes: document.getElementById('entryNotes').value || undefined,
+        });
+        closeModal('addEntryModal');
+        loadPlanner();
+      } catch (err) { alert(err?.detail || 'Failed to add entry'); }
+    }
+
+    // Reload planner when child changes
+    document.getElementById('plannerChildSelect').addEventListener('change', loadPlanner);
+
+    // ============================================================
+    // FOCUS AUDIT
+    // ============================================================
+    async function loadFocusAudit() {
+      const studentId = document.getElementById('focusChildSelect').value;
+      if (!studentId) return;
+
+      try {
+        const data = await api.getChildFocusAudit(studentId, 7);
+        const s = data.summary || {};
+
+        document.getElementById('avgFocusScore').innerHTML = focusBadge(s.avg_focus_score || 100);
+        document.getElementById('totalViolations').textContent = s.total_violations || 0;
+        document.getElementById('totalAwayTime').textContent = formatDuration(s.total_away_seconds || 0);
+        document.getElementById('goodSessions').textContent = `${s.good_sessions || 0} / ${s.total_sessions || 0}`;
+
+        // Session list
+        document.getElementById('focusSessionList').innerHTML = (data.sessions || []).map(s => `
+          <tr>
+            <td>${new Date(s.start_time).toLocaleString()}</td>
+            <td>${formatDuration(s.active_seconds)}</td>
+            <td>${s.total_violations}</td>
+            <td>${formatDuration(s.total_away_seconds)}</td>
+            <td>${focusBadge(s.focus_score)}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="5">No sessions tracked yet</td></tr>';
+
+        // Violations
+        document.getElementById('violationsList').innerHTML = (data.violations || []).map(v => `
+          <tr>
+            <td>${new Date(v.left_at).toLocaleString()}</td>
+            <td>${v.violation_type.replace(/_/g, ' ')}</td>
+            <td>${v.away_seconds ? formatDuration(v.away_seconds) : 'Did not return'}</td>
+            <td>${v.returned_at ? new Date(v.returned_at).toLocaleTimeString() : '<span style="color:var(--danger)">No</span>'}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="4">No violations recorded</td></tr>';
+      } catch (err) { console.error(err); }
+
+      // Load focus settings
+      loadFocusSettings(studentId);
+    }
+
+    async function loadFocusSettings(studentId) {
+      try {
+        const data = await api.getChildFocusSettings(studentId);
+        const s = data.settings;
+
+        document.getElementById('focusSettings').innerHTML = `
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div><strong>Focus Mode</strong><div style="font-size:13px;color:var(--text-secondary)">Track when your child leaves SmartStudy during study</div></div>
+              <button class="btn btn-sm ${s.focus_mode_enabled ? 'btn-success' : 'btn-outline'}"
+                      onclick="toggleFocusSetting('focusModeEnabled', ${!s.focus_mode_enabled})">
+                ${s.focus_mode_enabled ? 'Enabled' : 'Disabled'}
+              </button>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div><strong>Instant Notifications</strong><div style="font-size:13px;color:var(--text-secondary)">Get notified when a violation occurs</div></div>
+              <button class="btn btn-sm ${s.notify_on_violation ? 'btn-success' : 'btn-outline'}"
+                      onclick="toggleFocusSetting('notifyOnViolation', ${!s.notify_on_violation})">
+                ${s.notify_on_violation ? 'On' : 'Off'}
+              </button>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div><strong>Mode</strong><div style="font-size:13px;color:var(--text-secondary)">Soft = warn, Strict = pause session (mobile)</div></div>
+              <select onchange="toggleFocusSetting('blockMode', this.value)" style="padding:8px;border:1px solid var(--border);border-radius:8px;">
+                <option value="soft" ${s.block_mode === 'soft' ? 'selected' : ''}>Soft (Warn)</option>
+                <option value="strict" ${s.block_mode === 'strict' ? 'selected' : ''}>Strict (Pause)</option>
+                <option value="off" ${s.block_mode === 'off' ? 'selected' : ''}>Off (Track only)</option>
+              </select>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        document.getElementById('focusSettings').innerHTML = '<p>Failed to load settings</p>';
+      }
+    }
+
+    async function toggleFocusSetting(key, value) {
+      const studentId = document.getElementById('focusChildSelect').value;
+      try {
+        await api.updateChildFocusSettings(studentId, { [key]: value });
+        loadFocusSettings(studentId);
+      } catch (err) { alert(err?.detail || 'Failed to update'); }
+    }
+
+    document.getElementById('focusChildSelect').addEventListener('change', loadFocusAudit);
+
+    // ============================================================
+    // CONSENT
+    // ============================================================
+    async function loadConsents() {
+      try {
+        const data = await api.getConsents();
+        const container = document.getElementById('consentList');
+        const consentTypes = ['engagement_tracking', 'ai_interaction', 'data_processing'];
+        const labels = {
+          engagement_tracking: 'Study Time & Engagement Tracking',
+          ai_interaction: 'AI-Powered Doubt Solving & MCQ Generation',
+          data_processing: 'General Data Processing for Learning Analytics',
+        };
+        container.innerHTML = consentTypes.map(type => {
+          const consent = data.consents.find(c => c.consent_type === type);
+          const granted = consent?.granted || false;
+          return `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border);">
+              <div>
+                <div style="font-weight: 500">${labels[type]}</div>
+                <div style="font-size: 13px; color: var(--text-secondary)">${granted ? 'Consent granted' : 'Consent not granted'} ${consent?.granted_at ? ` on ${new Date(consent.granted_at).toLocaleDateString()}` : ''}</div>
+              </div>
+              <button class="btn btn-sm ${granted ? 'btn-danger' : 'btn-success'}" onclick="toggleConsent('${type}', ${!granted})">${granted ? 'Revoke' : 'Grant'}</button>
+            </div>`;
+        }).join('');
+      } catch (err) { console.error(err); }
+    }
+
+    async function toggleConsent(consentType, granted) {
+      try {
+        if (children.length === 0) return;
+        const studentId = children[0].student.id;
+        await api.updateConsent({ studentId, consentType, granted });
+        loadConsents();
+      } catch (err) { alert(err?.detail || 'Failed to update consent'); }
+    }
+
+    // ============================================================
+    // NOTIFICATIONS
+    // ============================================================
+    async function loadNotifications() {
+      try {
+        const data = await api.getParentNotifications();
+        const container = document.getElementById('notificationsList');
+        container.innerHTML = data.notifications.map(n => `
+          <div class="card" style="${n.read ? 'opacity: 0.7' : ''}">
+            <div class="card-header">
+              <h3>${n.title}</h3>
+              <span style="font-size: 12px; color: var(--text-secondary)">${new Date(n.created_at).toLocaleDateString()}</span>
+            </div>
+            <p style="font-size: 14px; color: var(--text-secondary)">${n.message}</p>
+          </div>
+        `).join('') || '<div class="card"><p>No notifications</p></div>';
+      } catch (err) { console.error(err); }
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    loadDashboard();
+  </script>
+</body>
+</html>
