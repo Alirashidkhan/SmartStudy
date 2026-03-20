@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -319,11 +318,17 @@
         document.querySelector(`.sidebar nav a[data-section="${section}"]`)?.classList.add('active');
 
         // Load section-specific data
+        if (section === 'practice') loadMcqTopics();
         if (section === 'papers') loadQuestionPapers();
+        if (section === 'sip') loadSipScores();
+        if (section === 'revisions') loadRevisions();
         if (section === 'homework') loadHomework();
         if (section === 'studytime') loadStudyTime();
         if (section === 'reportcard') loadReportCard();
         if (section === 'notifications') loadNotifications();
+        if (section === 'doubts') loadDoubts();
+        if (section === 'plans') loadStudyPlans();
+        if (section === 'achievements') loadAchievements();
       });
     });
 
@@ -650,6 +655,206 @@
       } catch (err) {
         console.error('Failed to load notifications:', err);
         document.getElementById('notificationsContainer').innerHTML = '<div style="color:var(--text-danger);padding:20px;">Failed to load notifications</div>';
+      }
+    }
+
+    // ---- MCQ Topics ----
+    async function loadMcqTopics() {
+      try {
+        const select = document.getElementById('practiceTopic');
+        if (select.options.length <= 1) {
+          ['Biology', 'Physics', 'Mathematics', 'Chemistry', 'English'].forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s; opt.textContent = s;
+            select.appendChild(opt);
+          });
+        }
+      } catch (err) { console.error(err); }
+    }
+
+    async function loadPractice() {
+      try {
+        const data = await api.getMcqPractice(1, 10);
+        const questions = data.questions || data;
+        const container = document.getElementById('mcqContainer');
+        if (!questions || questions.length === 0) {
+          container.innerHTML = '<div class="card"><p>No questions available</p></div>';
+          return;
+        }
+        container.innerHTML = questions.map((q, idx) => `
+          <div class="card" style="margin-bottom:15px;">
+            <h4 style="margin:0 0 12px 0">Q${idx + 1}. ${q.question_text}</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              ${q.options.map(opt => `
+                <button class="btn btn-outline mcq-option" onclick="submitAnswer(${q.id}, '${opt.key}', this)"
+                        style="text-align:left;padding:12px;">
+                  <strong>${opt.key}.</strong> ${opt.text}
+                </button>
+              `).join('')}
+            </div>
+            <div id="feedback-${q.id}" style="margin-top:10px;"></div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+        document.getElementById('mcqContainer').innerHTML = '<div class="card"><p style="color:var(--text-danger)">Failed to load questions</p></div>';
+      }
+    }
+
+    async function submitAnswer(questionId, selectedKey, btn) {
+      try {
+        const result = await api.submitMcqAnswer({ questionId, selectedKey });
+        const feedback = document.getElementById(`feedback-${questionId}`);
+        feedback.innerHTML = result.correct
+          ? `<span style="color:var(--success);font-weight:600;">✓ Correct! +${result.pointsAwarded} points</span>`
+          : `<span style="color:var(--danger);font-weight:600;">✗ Incorrect. Correct answer: ${result.correctOption}</span>`;
+        if (result.explanation) feedback.innerHTML += `<p style="font-size:13px;color:var(--text-secondary);margin-top:4px;">${result.explanation}</p>`;
+      } catch (err) { console.error(err); }
+    }
+
+    // ---- SIP Scores ----
+    async function loadSipScores() {
+      try {
+        const data = await api.getSipScores();
+        const scores = data.scores || [];
+        const container = document.getElementById('sipContainer');
+        if (scores.length === 0) {
+          container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary)">No SIP scores available</div>';
+          return;
+        }
+        container.innerHTML = scores.map(s => `
+          <div class="card" style="margin-bottom:15px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <h4 style="margin:0">${s.subject_name}</h4>
+              <span class="sip-badge ${s.composite_sip >= 80 ? 'sip-excellent' : s.composite_sip >= 60 ? 'sip-good' : s.composite_sip >= 40 ? 'sip-average' : 'sip-poor'}">${parseFloat(s.composite_sip).toFixed(1)}</span>
+            </div>
+            <div class="stats-grid" style="margin-top:12px;">
+              <div class="stat-card"><div class="label">MCQ</div><div class="value">${s.mcq_score}</div></div>
+              <div class="stat-card"><div class="label">Engagement</div><div class="value">${s.engagement_score}</div></div>
+              <div class="stat-card"><div class="label">Revision</div><div class="value">${s.revision_score}</div></div>
+              <div class="stat-card"><div class="label">Mock</div><div class="value">${s.mock_score}</div></div>
+            </div>
+            <p style="margin:8px 0 0;font-size:13px;color:var(--text-secondary);">Trend: ${s.trend === 'improving' ? '↑ Improving' : s.trend === 'declining' ? '↓ Declining' : '→ Stable'}</p>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+        document.getElementById('sipContainer').innerHTML = '<div style="color:var(--text-danger);padding:20px;">Failed to load SIP scores</div>';
+      }
+    }
+
+    // ---- Revisions ----
+    async function loadRevisions() {
+      try {
+        const data = await api.getRevisions();
+        const revisions = data.revisions || [];
+        const container = document.getElementById('revisionsContainer');
+        if (revisions.length === 0) {
+          container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary)">No revisions scheduled</div>';
+          return;
+        }
+        container.innerHTML = `<div class="card"><table>
+          <thead><tr><th>Topic</th><th>Scheduled</th><th>Interval</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>${revisions.map(r => `
+            <tr>
+              <td>${r.topic_name}</td>
+              <td>${new Date(r.scheduled_date).toLocaleDateString()}</td>
+              <td>Day ${r.interval_day}</td>
+              <td><span class="sip-badge ${r.status === 'completed' ? 'sip-excellent' : 'sip-average'}">${r.status}</span></td>
+              <td>${r.status === 'pending' ? `<button class="btn btn-sm btn-success" onclick="completeRevision(${r.id})">Complete</button>` : '✓'}</td>
+            </tr>
+          `).join('')}</tbody>
+        </table></div>`;
+      } catch (err) {
+        console.error(err);
+        document.getElementById('revisionsContainer').innerHTML = '<div style="color:var(--text-danger);padding:20px;">Failed to load revisions</div>';
+      }
+    }
+
+    // ---- Doubts ----
+    async function loadDoubts() {
+      try {
+        const data = await api.getDoubts();
+        const doubts = data.doubts || [];
+        const select = document.getElementById('doubtSubject');
+        if (select.options.length <= 1) {
+          ['Biology', 'Physics', 'Mathematics', 'Chemistry', 'English'].forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s; opt.textContent = s;
+            select.appendChild(opt);
+          });
+        }
+        document.getElementById('doubtsList').innerHTML = doubts.length > 0
+          ? doubts.map(d => `<div class="card" style="margin-bottom:10px;"><h4 style="margin:0 0 8px 0">${d.question}</h4><p style="margin:0;font-size:14px;color:var(--text-secondary);">${d.ai_answer || 'Awaiting response...'}</p><p style="margin:4px 0 0;font-size:12px;color:#999;">Status: ${d.status}</p></div>`).join('')
+          : '<p style="color:var(--text-secondary);font-size:14px;">No past doubts</p>';
+      } catch (err) { console.error(err); }
+    }
+
+    async function submitDoubt() {
+      const subject = document.getElementById('doubtSubject').value;
+      const text = document.getElementById('doubtText').value;
+      if (!text) { alert('Please type your question'); return; }
+      try {
+        const result = await api.askDoubt({ subject, question: text });
+        alert('AI Response: ' + (result.ai_response || 'Submitted!'));
+        document.getElementById('doubtText').value = '';
+        loadDoubts();
+      } catch (err) { alert(err?.detail || 'Failed to submit'); }
+    }
+
+    // ---- Study Plans ----
+    async function loadStudyPlans() {
+      try {
+        const data = await api.getStudyPlans();
+        const plans = data.plans || [];
+        const container = document.getElementById('plansContainer');
+        if (plans.length === 0) {
+          container.innerHTML = '<div class="card"><p style="color:var(--text-secondary)">No study plans available. AI-generated study plans will appear here based on your SIP scores and upcoming exams.</p></div>';
+          return;
+        }
+        container.innerHTML = plans.map(p => `<div class="card" style="margin-bottom:12px;"><h4 style="margin:0 0 8px 0;">${p.title}</h4><p style="margin:0;font-size:14px;">${p.description}</p></div>`).join('');
+      } catch (err) {
+        console.error(err);
+        document.getElementById('plansContainer').innerHTML = '<div class="card"><p style="color:var(--text-secondary)">No study plans available yet.</p></div>';
+      }
+    }
+
+    // ---- Achievements ----
+    async function loadAchievements() {
+      try {
+        const data = await api.getGamification();
+        const container = document.getElementById('achievementsContainer');
+        container.innerHTML = `
+          <div class="card">
+            <div class="card-header"><h3>Your Stats</h3></div>
+            <div class="stats-grid">
+              <div class="stat-card"><div class="label">Current Streak</div><div class="value">🔥 ${data.streak.current_streak}</div></div>
+              <div class="stat-card"><div class="label">Longest Streak</div><div class="value">${data.streak.longest_streak}</div></div>
+              <div class="stat-card"><div class="label">Total Points</div><div class="value">${data.streak.total_points.toLocaleString()}</div></div>
+              <div class="stat-card"><div class="label">Level</div><div class="value">${data.streak.level}</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Badges</h3></div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;">
+              ${data.badges.map(b => `<div style="text-align:center;padding:16px;background:var(--surface);border-radius:8px;border:1px solid var(--border);">
+                <div style="font-size:28px;margin-bottom:8px;">${b.icon}</div>
+                <div style="font-weight:600;font-size:13px;">${b.name}</div>
+                <div style="font-size:11px;color:var(--text-secondary);">${new Date(b.earned_at).toLocaleDateString()}</div>
+              </div>`).join('')}
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h3>Leaderboard</h3></div>
+            <table>
+              <thead><tr><th>Rank</th><th>Name</th><th>Points</th></tr></thead>
+              <tbody>${data.leaderboard.map(l => `<tr><td>#${l.rank}</td><td>${l.name}</td><td>${l.points.toLocaleString()}</td></tr>`).join('')}</tbody>
+            </table>
+          </div>
+        `;
+      } catch (err) {
+        console.error(err);
+        document.getElementById('achievementsContainer').innerHTML = '<div style="color:var(--text-danger);padding:20px;">Failed to load achievements</div>';
       }
     }
 
