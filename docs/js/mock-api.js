@@ -120,17 +120,21 @@ class SmartStudyAPI {
   // Student
   _studentDashboard() {
     return {
-      sip: { subjects: [
+      sip: [
         { subject_id: 1, subject_name: 'Biology', composite_sip: 72.5, trend: 'improving' },
         { subject_id: 2, subject_name: 'Physics', composite_sip: 58.3, trend: 'stable' },
         { subject_id: 3, subject_name: 'Mathematics', composite_sip: 81.2, trend: 'improving' },
-      ]},
+      ],
       streak: { current_streak: 12, longest_streak: 18, total_points: 2450, level: 5 },
-      pendingRevisions: 3,
+      upcomingRevisions: [
+        { id: 1, topic_name: 'Cell Biology', subject_id: 1, scheduled_date: '2026-03-20', revision_number: 1, status: 'pending' },
+        { id: 2, topic_name: 'Newton\'s 3rd Law', subject_id: 2, scheduled_date: '2026-03-20', revision_number: 3, status: 'pending' },
+        { id: 3, topic_name: 'Quadratic Equations', subject_id: 3, scheduled_date: '2026-03-21', revision_number: 7, status: 'pending' },
+      ],
       recentActivity: [
-        { type: 'mcq', detail: 'Biology MCQ — 8/10 correct', created_at: '2026-03-19T15:30:00Z' },
-        { type: 'content', detail: 'Read "Photosynthesis Guide"', created_at: '2026-03-19T14:00:00Z' },
-        { type: 'revision', detail: 'Completed Cell Biology revision', created_at: '2026-03-18T16:00:00Z' },
+        { subject_id: 1, start_time: '2026-03-19T15:30:00Z', active_seconds: 2700, completed: true },
+        { subject_id: 3, start_time: '2026-03-19T14:00:00Z', active_seconds: 3600, completed: true },
+        { subject_id: 2, start_time: '2026-03-18T16:00:00Z', active_seconds: 1800, completed: false },
       ],
     };
   }
@@ -139,7 +143,7 @@ class SmartStudyAPI {
     return { questions: [
       { id: 1, question_text: 'Which organelle is responsible for photosynthesis?', options: [{key:'A',text:'Mitochondria'},{key:'B',text:'Chloroplast'},{key:'C',text:'Ribosome'},{key:'D',text:'Golgi Body'}], difficulty: 'Medium', subject: 'Biology' },
       { id: 2, question_text: 'What is the powerhouse of the cell?', options: [{key:'A',text:'Nucleus'},{key:'B',text:'Chloroplast'},{key:'C',text:'Mitochondria'},{key:'D',text:'ER'}], difficulty: 'Easy', subject: 'Biology' },
-      { id: 3, question_text: 'DNA replication occurs during which phase?', options: [{key:'A',text:'G1 phase'},{key:'B',text:'S phase'},{key:'C',text:'G2 phase'},{key:'D',text:'M phase'}], difficulty: 'Medium', subject: 'Biology' },
+      { id: 3, question_text: 'DNA replication occurs during which phase?', options: [{key:'A',text:'G1 phase'},{key:'B',text:'S Phase'},{key:'C',text:'G2 phase'},{key:'D',text:'M phase'}], difficulty: 'Medium', subject: 'Biology' },
       { id: 4, question_text: 'What is the SI unit of force?', options: [{key:'A',text:'Dyne'},{key:'B',text:'Newton'},{key:'C',text:'Joule'},{key:'D',text:'Watt'}], difficulty: 'Easy', subject: 'Physics' },
       { id: 5, question_text: 'Which law states F = ma?', options: [{key:'A',text:'First Law'},{key:'B',text:'Second Law'},{key:'C',text:'Third Law'},{key:'D',text:'Law of Gravitation'}], difficulty: 'Medium', subject: 'Physics' },
       { id: 6, question_text: 'What is the speed of light in vacuum?', options: [{key:'A',text:'3 × 10^8 m/s'},{key:'B',text:'3 × 10^7 m/s'},{key:'C',text:'3 × 10^9 m/s'},{key:'D',text:'3 × 10^6 m/s'}], difficulty: 'Easy', subject: 'Physics' },
@@ -205,30 +209,34 @@ class SmartStudyAPI {
 
   _engagementHistory() {
     return {
-      dailyStudyTime: [
-        { date: '2026-03-14', totalMinutes: 245, subjects: { Biology: 80, Physics: 65, Mathematics: 100 } },
-        { date: '2026-03-15', totalMinutes: 310, subjects: { Biology: 100, Physics: 85, Mathematics: 125 } },
-        { date: '2026-03-16', totalMinutes: 195, subjects: { Biology: 60, Physics: 50, Mathematics: 85 } },
-        { date: '2026-03-17', totalMinutes: 280, subjects: { Biology: 90, Physics: 75, Mathematics: 115 } },
-        { date: '2026-03-18', totalMinutes: 340, subjects: { Biology: 110, Physics: 95, Mathematics: 135 } },
-        { date: '2026-03-19', totalMinutes: 265, subjects: { Biology: 85, Physics: 70, Mathematics: 110 } },
-        { date: '2026-03-20', totalMinutes: 220, subjects: { Biology: 70, Physics: 60, Mathematics: 90 } },
+      dailyStats: [
+        { date: '2026-03-14', totalMinutes: 245, sessions: 4, devices: ['mobile', 'desktop'] },
+        { date: '2026-03-15', totalMinutes: 310, sessions: 5, devices: ['desktop', 'tablet'] },
+        { date: '2026-03-16', totalMinutes: 195, sessions: 3, devices: ['mobile'] },
+        { date: '2026-03-17', totalMinutes: 280, sessions: 4, devices: ['desktop', 'mobile'] },
+        { date: '2026-03-18', totalMinutes: 340, sessions: 6, devices: ['desktop', 'tablet', 'mobile'] },
+        { date: '2026-03-19', totalMinutes: 265, sessions: 4, devices: ['desktop', 'mobile'] },
+        { date: '2026-03-20', totalMinutes: 220, sessions: 3, devices: ['desktop'] },
       ],
+      focusScore: 82,
       weeklyStats: { totalHours: 17.58, avgDailyMinutes: 265.4 },
-      deviceBreakdown: { mobile: 35, tablet: 25, desktop: 40 },
+      deviceBreakdown: [
+        { device: 'Mobile', minutes: 650, sessions: 12 },
+        { device: 'Tablet', minutes: 465, sessions: 8 },
+        { device: 'Desktop', minutes: 740, sessions: 14 },
+      ],
       subjectBreakdown: { Biology: 595, Physics: 500, Mathematics: 760 },
       sessions: [
-        { id: 1, subject: 'Biology', start_time: '2026-03-20T08:00:00Z', end_time: '2026-03-20T09:15:00Z', active_seconds: 4500, scroll_depth: 85, interaction_count: 42 },
-        { id: 2, subject: 'Mathematics', start_time: '2026-03-20T10:00:00Z', end_time: '2026-03-20T11:30:00Z', active_seconds: 5400, scroll_depth: 92, interaction_count: 68 },
-        { id: 3, subject: 'Physics', start_time: '2026-03-19T15:00:00Z', end_time: '2026-03-19T16:10:00Z', active_seconds: 4200, scroll_depth: 78, interaction_count: 35 },
-        { id: 4, subject: 'Biology', start_time: '2026-03-19T10:00:00Z', end_time: '2026-03-19T11:45:00Z', active_seconds: 6300, scroll_depth: 88, interaction_count: 52 },
+        { id: 1, subject: 'Biology', date: '2026-03-20T08:00:00Z', duration: 75, active_seconds: 4500 },
+        { id: 2, subject: 'Mathematics', date: '2026-03-20T10:00:00Z', duration: 90, active_seconds: 5400 },
+        { id: 3, subject: 'Physics', date: '2026-03-19T15:00:00Z', duration: 70, active_seconds: 4200 },
+        { id: 4, subject: 'Biology', date: '2026-03-19T10:00:00Z', duration: 105, active_seconds: 6300 },
       ],
     };
   }
 
   _questionPapers() {
-    return {
-      papers: [
+    return [
         {
           id: 1,
           title: 'Biology Mid-Term',
@@ -273,13 +281,11 @@ class SmartStudyAPI {
           score: null,
           completedAt: null,
         },
-      ],
-    };
+      ];
   }
 
   _homework() {
-    return {
-      assignments: [
+    return [
         {
           id: 1,
           title: 'Photosynthesis Essay',
@@ -376,8 +382,7 @@ class SmartStudyAPI {
           totalMarks: 12,
           type: 'written',
         },
-      ],
-    };
+      ];
   }
 
   _reportCard() {
@@ -390,67 +395,29 @@ class SmartStudyAPI {
         rollNumber: '15',
       },
       subjects: [
-        {
-          subjectName: 'Biology',
-          marksObtained: 78,
-          totalMarks: 100,
-          grade: 'A',
-          teacherRemark: 'Excellent understanding of concepts. Very attentive in class.',
-        },
-        {
-          subjectName: 'Physics',
-          marksObtained: 72,
-          totalMarks: 100,
-          grade: 'A',
-          teacherRemark: 'Good grasp of numerical problems. Needs more practice with derivations.',
-        },
-        {
-          subjectName: 'Mathematics',
-          marksObtained: 85,
-          totalMarks: 100,
-          grade: 'A+',
-          teacherRemark: 'Outstanding performance. Sharp analytical skills demonstrated.',
-        },
-        {
-          subjectName: 'Chemistry',
-          marksObtained: 75,
-          totalMarks: 100,
-          grade: 'A',
-          teacherRemark: 'Good conceptual clarity. Practice organic chemistry more.',
-        },
-        {
-          subjectName: 'English',
-          marksObtained: 82,
-          totalMarks: 100,
-          grade: 'A',
-          teacherRemark: 'Excellent writing skills and articulation. Keep it up!',
-        },
+        { name: 'Biology', marks: 78, totalMarks: 100, grade: 'A', remark: 'Excellent understanding of concepts. Very attentive in class.' },
+        { name: 'Physics', marks: 72, totalMarks: 100, grade: 'A', remark: 'Good grasp of numerical problems. Needs more practice with derivations.' },
+        { name: 'Mathematics', marks: 85, totalMarks: 100, grade: 'A+', remark: 'Outstanding performance. Sharp analytical skills demonstrated.' },
+        { name: 'Chemistry', marks: 75, totalMarks: 100, grade: 'A', remark: 'Good conceptual clarity. Practice organic chemistry more.' },
+        { name: 'English', marks: 82, totalMarks: 100, grade: 'A', remark: 'Excellent writing skills and articulation. Keep it up!' },
       ],
-      summary: {
-        totalMarksObtained: 392,
-        totalMarks: 500,
-        overallPercentage: 78.4,
-        rank: 8,
-        attendancePercentage: 94,
-      },
-      remarks: {
-        classTeacherRemark: 'Arjun is a dedicated student with consistent performance. Shows good leadership qualities.',
-        principalRemark: 'Outstanding all-round development. Keep maintaining this standard of excellence.',
-      },
+      overallPercentage: 78.4,
+      rank: 8,
+      attendance: 94,
+      principalRemark: 'Outstanding all-round development. Keep maintaining this standard of excellence.',
+      classTeacherRemark: 'Arjun is a dedicated student with consistent performance. Shows good leadership qualities.',
       generatedDate: '2026-03-15',
     };
   }
 
   _studentNotifications() {
-    return {
-      notifications: [
-        { id: 1, type: 'homework_due', title: 'Homework Due Tomorrow', message: 'Newton\'s Laws MCQ Set is due tomorrow', created_at: '2026-03-20T10:30:00Z', read: false },
-        { id: 2, type: 'test_reminder', title: 'Upcoming Test', message: 'Biology Mid-Term test on 2026-03-22. Start revision now!', created_at: '2026-03-20T09:00:00Z', read: false },
-        { id: 3, type: 'achievement', title: 'Achievement Unlocked', message: 'You earned "Perfect Score" badge!', created_at: '2026-03-19T16:45:00Z', read: true },
-        { id: 4, type: 'revision_reminder', title: 'Revision Time', message: 'Cell Biology revision is scheduled for today', created_at: '2026-03-20T08:00:00Z', read: false },
-        { id: 5, type: 'report_card', title: 'Report Card Available', message: 'Your mid-term report card is now available', created_at: '2026-03-15T14:00:00Z', read: true },
-      ],
-    };
+    return [
+        { id: 1, type: 'homework_due', title: 'Homework Due Tomorrow', message: 'Newton\'s Laws MCQ Set is due tomorrow', time: '2026-03-20T10:30:00Z', read: false },
+        { id: 2, type: 'test_reminder', title: 'Upcoming Test', message: 'Biology Mid-Term test on 2026-03-22. Start revision now!', time: '2026-03-20T09:00:00Z', read: false },
+        { id: 3, type: 'achievement', title: 'Achievement Unlocked', message: 'You earned "Perfect Score" badge!', time: '2026-03-19T16:45:00Z', read: true },
+        { id: 4, type: 'revision_reminder', title: 'Revision Time', message: 'Cell Biology revision is scheduled for today', time: '2026-03-20T08:00:00Z', read: false },
+        { id: 5, type: 'report_card', title: 'Report Card Available', message: 'Your mid-term report card is now available', time: '2026-03-15T14:00:00Z', read: true },
+      ];
   }
 
   _attendance() {
@@ -491,10 +458,15 @@ class SmartStudyAPI {
   // Teacher
   _teacherDashboard() {
     return {
-      pendingMcqs: 8,
+      pendingMcqReviews: 8,
       totalContent: 24,
       classStats: { avg_sip: 65.4, total_students: 45, active_today: 32 },
-      escalatedDoubts: 2,
+      unresolvedDoubts: 2,
+      classPerformance: [
+        { subject_id: 1, student_count: 42, avg_sip: 68.4 },
+        { subject_id: 2, student_count: 40, avg_sip: 58.2 },
+        { subject_id: 3, student_count: 44, avg_sip: 72.1 },
+      ],
     };
   }
 
@@ -507,7 +479,7 @@ class SmartStudyAPI {
 
   _classAnalytics() {
     return {
-      sipDistribution: { excellent: 8, good: 15, average: 14, low: 8 },
+      sipDistribution: { excellent: 8, good: 15, average: 14, needs_improvement: 8 },
       topPerformers: [
         { student_id: 1, name: 'Arjun Kumar', avg_sip: 72.5 },
         { student_id: 5, name: 'Riya Sharma', avg_sip: 78.2 },
@@ -587,11 +559,12 @@ class SmartStudyAPI {
           { topic_name: 'Cell Biology', scheduled_date: '2026-03-20', status: 'pending' },
         ],
         homeworkSummary: {
+          assigned: 8,
           pending: 3,
           overdue: 1,
           completed: 4,
         },
-        todayStudyTime: 185,
+        todayStudyMinutes: 185,
         weeklyStudyHours: 17.5,
         reportCardAvailable: true,
         attendanceSummary: {
@@ -665,7 +638,7 @@ class SmartStudyAPI {
       { id: 15, name: 'Dinner', icon: '🍛', color: '#4D7C0F', sort_order: 15 },
       { id: 16, name: 'Sleep', icon: '😴', color: '#6B7280', sort_order: 17 },
       { id: 17, name: 'Bath / Hygiene', icon: '🚿', color: '#06B6D4', sort_order: 19 },
-      { id: 18, name: 'Family Time', icon: '👨‍👩‍👧‍👦', color: '#EC4899', sort_order: 20 },
+      { id: 18, name: 'Family Time', icon: '�‍👩‍👧‍👦', color: '#EC4899', sort_order: 20 },
       { id: 19, name: 'Free Time', icon: '🎮', color: '#F472B6', sort_order: 22 },
     ]};
   }
@@ -698,261 +671,274 @@ class SmartStudyAPI {
       { id: 21, day_of_week: 4, start_time: '08:00:00', end_time: '10:00:00', title: 'Math + Biology', category_name: 'Study', category_icon: '📚', category_color: '#4F46E5' },
       { id: 22, day_of_week: 4, start_time: '15:00:00', end_time: '16:00:00', title: null, category_name: 'Tuition', category_icon: '👨‍🏫', category_color: '#A78BFA' },
       { id: 23, day_of_week: 5, start_time: '08:00:00', end_time: '09:30:00', title: 'Weekly test prep', category_name: 'Revision', category_icon: '🔄', category_color: '#6366F1' },
-      { id: 24, day_of_week: 5, start_time: '16:00:00', end_time: '17:30:00', title: 'Football', category_name: 'Sports', category_icon: '⚽', category_color: '#10B981' },
-      { id: 25, day_of_week: 6, start_time: '09:00:00', end_time: '10:00:00', title: null, category_name: 'Reading', category_icon: '📖', category_color: '#3B82F6' },
-      { id: 26, day_of_week: 6, start_time: '16:00:00', end_time: '18:00:00', title: null, category_name: 'Family Time', category_icon: '👨‍👩‍👧‍👦', category_color: '#EC4899' },
-      { id: 27, day_of_week: 0, start_time: '10:00:00', end_time: '11:00:00', title: 'Light revision', category_name: 'Revision', category_icon: '🔄', category_color: '#6366F1' },
-      { id: 28, day_of_week: 0, start_time: '15:00:00', end_time: '17:00:00', title: null, category_name: 'Free Time', category_icon: '🎮', category_color: '#F472B6' },
-    ]};
-  }
+      { id: 24, day_of_week: 5, start_time: '16:00:00', end_time: '17:30:00', title: 'Football', category_name: 'Sports', category_icon: '⚽	��]Y�ܞW���܎�	��L�NI�K��Y��K^W�ٗ��YZΈ
+��\��[YN�	�N��	�[��[YN�	�L��	�]N��[�]Y�ܞWۘ[YN�	ԙXY[����]Y�ܞW�X�ێ�	�'����]Y�ܞW���܎�	��Ў����K��Y���^W�ٗ��YZΈ
+��\��[YN�	�M���	�[��[YN�	�N��	�]N��[�]Y�ܞWۘ[YN�	ј[Z[H[YI��]Y�ܞW�X�ێ�	�'�j8�#|'�jx�#|'�i��#|'�i���]Y�ܞW���܎�	��P�NI�K��Y���^W�ٗ��YZΈ�\��[YN�	�L��	�[��[YN�	�LN��	�]N�	�Y��]�\�[ۉ��]Y�ܞWۘ[YN�	ԙ]�\�[ۉ��]Y�ܞW�X�ێ�	�'�!	��]Y�ܞW���܎�	�͍͌��I�K��Y��^W�ٗ��YZΈ�\��[YN�	�MN��	�[��[YN�	�MΌ�	�]N��[�]Y�ܞWۘ[YN�	ќ�YH[YI��]Y�ܞW�X�ێ�	�'㫉��]Y�ܞW���܎�	�э
+̐���K�_NB���[��\�[��Y��
+H�]\��]N�	̌��L�L�	�^Sٕ�YZΈ
+�[��Y\Έ�K��[[X\�N���[[��YZ[��
+M�YSZ[��NX�]�]SZ[��L��ܙY[�[YSZ[����Y\Z[��
+M��\]Y��[��
+��[��[��LK��\��[��Έ���ۜ�Y\�Y[���]�܈X�]�]H�^I�K�NB���^T��Y[J
+H�]\����^N��Y���\��[YN�	���	�[��[YN�	�L��	�]N�	�X]
+���Y[��I��]Y�ܞWۘ[YN�	��YI�X�ێ�	�'�����܎�	���
+�MI�K��Y�
+��\��[YN�	�M��	�[��[YN�	�MN��	�]N��[�]Y�ܞWۘ[YN�	��Y]�ܚ��X�ێ�	�'��I���܎�	�����QQ	�K��Y��\��[YN�	�M���	�[��[YN�	�MΌ�	�]N�	�ܚX��]	��]Y�ܞWۘ[YN�	��ܝ��X�ێ�	���I���܎�	��L�NI�K�_NB����YZ[���YZ[�\���\�
 
-  _plannerInsights() {
-    return {
-      date: '2026-03-20', dayOfWeek: 4,
-      entries: [],
-      summary: { totalPlannedMin: 540, studyMin: 180, activityMin: 120, screenTimeMin: 30, sleepMin: 540, completedCount: 6, totalCount: 10 },
-      warnings: ['Consider adding outdoor activity today'],
-    };
-  }
+H�]\��ݙ\��Y]Έ��[�Y[�Έ
 
-  _mySchedule() {
-    return { today: [
-      { id: 3, start_time: '08:00:00', end_time: '10:00:00', title: 'Math + Science', category_name: 'Study', icon: '📚', color: '#4F46E5' },
-      { id: 7, start_time: '14:00:00', end_time: '15:00:00', title: null, category_name: 'Homework', icon: '📝', color: '#7C3AED' },
-      { id: 8, start_time: '16:00:00', end_time: '17:00:00', title: 'Cricket', category_name: 'Sports', icon: '⚽', color: '#10B981' },
-    ]};
-  }
+L�[XX�\�Έ�[�Yܘ][ۓ[�N�	��[�[ۙI�K��۝[����[���K�X�N��\�ݙY�L�[�[�ԙ]�Y]Έ
+K��\�������]����\�
+���]ܚ\�����[���K�[��Y�[Y[���X�]�W��Y[�Έ�L�K��Y]�ܚΈ��[\��YۙY��
+��\][۔�]N�
+��Kݙ\�YP��[��N]���X�Z\��[ە[YN�͈K���Y�X�][ۜΈ��[��[��L�[��XY�M
+HK�[��Y�[Y[�Y]�X�Έ�]��Z[T�YSZ[����K�[�\��[ۜ��YZΈ̍K�ZN���[ܙ\]Y\�Έ
+M�[�����	����	�]���][��W�\ΈL��Z[\�\ΈL�K�Z[PX�]�T�Y[�Έ�]N�	̌��L�LM	�X�]�W��Y[�Έ�
+HK��]N�	̌��L�LMI�X�]�W��Y[�ΈM�K��]N�	̌��L�LM��X�]�W��Y[�ΈNK��]N�	̌��L�LM��X�]�W��Y[�Έ�LK��]N�	̌��L�LN	�X�]�W��Y[�Έ�NK��]N�	̌��L�LNI�X�]�W��Y[�Έ�
+HK��]N�	̌��L�L�	�X�]�W��Y[�Έ�L�K�K�NB���YZ[��Y[��
+H�]\����Y[�Έ�Y�K�\��ۘ[YN�	�\��[��\�ۘ[YN�	��[X\��]����\�
+̋�K��XZΈL��[�Έ�
+LK��Y���\��ۘ[YN�	Ԛ^XI�\�ۘ[YN�	��\�XI�]����\�
+�����XZΈ�[�Έ��K��Y���\��ۘ[YN�	��\�[��\�ۘ[YN�	�YZI�]����\�
+�K�K��XZΈ
+K�[�Έ�MLK��Y�
+�\��ۘ[YN�	�[�[�XI�\�ۘ[YN�	�][	�]����\�����XZΈMK�[�Έ�LK��Y�
+K�\��ۘ[YN�	՚Zܘ[I�\�ۘ[YN�	��[��	�]����\�
 
-  // Admin
-  _adminDashboard() {
-    return {
-      overview: { totalStudents: 450, totalTeachers: 28, integrationMode: 'standalone' },
-      content: { total: 342 },
-      mcq: { approved: 1240, pendingReview: 48 },
-      sip: { school_avg_sip: 64.7, at_risk_count: 38 },
-      engagement: { active_students: 312 },
-      homework: { total_assigned: 284, completion_rate: 78.5 },
-      notifications: { total_sent: 1240, unread: 145 },
-      engagementMetrics: { avg_daily_study_time: 265.4, total_sessions: 3240 },
-      ai: { total_requests: 8540, total_cost: '42.30', avg_latency_ms: 1200, failures: 12 },
-      dailyActiveStudents: [
-        { date: '2026-03-14', active_students: 285 },
-        { date: '2026-03-15', active_students: 142 },
-        { date: '2026-03-16', active_students: 98 },
-        { date: '2026-03-17', active_students: 310 },
-        { date: '2026-03-18', active_students: 298 },
-        { date: '2026-03-19', active_students: 305 },
-        { date: '2026-03-20', active_students: 312 },
-      ],
-    };
-  }
+K����XZΈ��[�ΈLK��Y�
+��\��ۘ[YN�	��]I�\�ۘ[YN�	��\I�]����\�
+�K���XZΈK�[�ΈNMLK�_NB���ZU\�Y�J
+H�]\���U\N���\]Y\��\N�	�X�W��[�\�][ۉ���[��̌����	�N�L	�]���][��N�MK���\]Y\��\N�	��X�����[�����[�������	�MK��	�]���][��N�LLK���\]Y\��\N�	��YW�[����[��MM����	�K�	�]���][��N�LK���\]Y\��\N�	��۝[���[[X\�I���[��L����	̋�	�]���][��N�K�K��S[�[��[�[�\�Y�	��M�[Z[�I���[��
+������	��K�	�K��[�[�\�Y�	��[Z[�KL��Y�\�	���[��������	�ˌ�	�K�K�NB����\�[R[���
+H�]\���\��[ێ�	�K��	�[�Yܘ][ۓ[�N�	��[�[ۙI���U�\��[ێ�	݌���L��	�\[YN�
+��]X�\�N���[�ۛ�X�[ۜΈX^�ۛ�X�[ۜΈ�][^�][۔��
+K�ZN���[�ZP�ۙ�Y�\�Y��YK�[Z[�P�ۙ�Y�\�Y��YK�Y[�Z[S[Z]�
+LK�NB����X��
+H�]\����X�Έ�Y�K�[YN�	����[�\�\���\\�۝[X�\��K��\��	�Д�I�Y��X�[W�]�[�	�YY][I�K��Y���[YN�	��[�[���I��\\�۝[X�\�����\��	�Д�I�Y��X�[W�]�[�	�X\�I�K��Y���[YN�	��[�]X��	�\�Y]I��\\�۝[X�\�����\��	�Д�I�Y��X�[W�]�[�	�\�	�K��Y�
+�[YN�	ә]�ۗ	��]����\\�۝[X�\��K��\��	�Д�I�Y��X�[W�]�[�	�YY][I�K��Y�
+K�[YN�	�[X���XYۙ]X�[�X�[ۉ��\\�۝[X�\��
+K��\��	�Д�I�Y��X�[W�]�[�	�\�	�K�_NB���YZ[���Y�X�][ۜ�
+H�]\����Y�X�][ۜΈ�Y�K\N�	��\�[W�[\�	�]N�	��\�[H\��ܛX[��I�Y\��Y�N�	��\��\��H\�Y�H\�
+̉K�[ۚ]܈���[K��[Y\�[\�	̌��L�L�L�
+N����XY��[�HK��Y��\N�	ۙ]�ܙY�\��][ۉ�]N�	ә]��Y�\��][ۜ��Y\��Y�N�	�L��]��Y[���Y�\�\�Y[�H\���\���[Y\�[\�	̌��L�L������XY��[�HK��Y��\N�	��\�[W�[\�	�]N�	�]X�\�H�X��\	�Y\��Y�N�	���Y[Y�X��\��\]Y�X��\�ٝ[I�[Y\�[\�	̌��L�LNU�������XY��YHK��Y�
+\N�	ۙ]�ܙY�\��][ۉ�]N�	ә]�XX�\��Y�\��][ۉ�Y\��Y�N�	ә]�XX�\��Y�\�\�Y�YY\�H�Z\��[Y\�[\�	̌��L�LNMN������XY��YHK�K�NB�����[��\[���[��\[ݙ\��Y]�
+H�]\���������[�Y[�Έ
 
-  _adminStudents() {
-    return { students: [
-      { id: 1, first_name: 'Arjun', last_name: 'Kumar', avg_sip: 72.5, streak: 12, points: 2450 },
-      { id: 2, first_name: 'Riya', last_name: 'Sharma', avg_sip: 78.2, streak: 8, points: 2280 },
-      { id: 3, first_name: 'Karan', last_name: 'Mehta', avg_sip: 65.1, streak: 5, points: 2150 },
-      { id: 4, first_name: 'Ananya', last_name: 'Patel', avg_sip: 82.4, streak: 15, points: 3100 },
-      { id: 5, first_name: 'Vikram', last_name: 'Singh', avg_sip: 45.3, streak: 2, points: 890 },
-      { id: 6, first_name: 'Priti', last_name: 'Gupta', avg_sip: 71.8, streak: 9, points: 1950 },
-    ]};
-  }
+L�[XX�\�Έ�[�Yܘ][ۓ[�N�	��[�[ۙI�K��\��]����\�
+���YYX[���\�
+����^�[[��
+L�����M
+K]�\�Y�N�M��YY��[�
+HK��X��X���XZ��ێ���X��X��Y�K]����\�
+���Y[����[��
+�[\�ݚ[�ΈNX�[�[�Έ
 
-  _aiUsage() {
-    return {
-      byType: [
-        { request_type: 'mcq_generation', count: 3200, cost: '18.50', avg_latency: 1400 },
-        { request_type: 'doubt_solving', count: 2800, cost: '15.20', avg_latency: 1100 },
-        { request_type: 'study_plan', count: 1540, cost: '5.80', avg_latency: 900 },
-        { request_type: 'content_summary', count: 1000, cost: '2.80', avg_latency: 800 },
-      ],
-      byModel: [
-        { model_used: 'gpt-4o-mini', count: 6200, cost: '35.00' },
-        { model_used: 'gemini-2.0-flash', count: 2340, cost: '7.30' },
-      ],
-    };
-  }
+HK���X��X��Y��]����\�
+N���Y[����[��
+L[\�ݚ[�ΈL�X�[�[�Έ
+HK���X��X��Y��]����\�
+̋�K�Y[����[��
 
-  _systemInfo() {
-    return {
-      version: '1.0.0', integrationMode: 'standalone', nodeVersion: 'v22.12.0', uptime: 86400,
-      database: { totalConnections: 8, maxConnections: 20, utilizationPct: 40 },
-      ai: { openaiConfigured: true, geminiConfigured: true, studentDailyLimit: 50 },
-    };
-  }
+[\�ݚ[�Έ�LX�[�[�Έ�HK�K�[��Y�[Y[��[����YZΈ	̌��L�L�	�X�]�W��Y[�Έ��[��\�ΈM�]����\��[ۗ�Z[���K���YZΈ	̌��L�L��X�]�W��Y[�Έ�L�[��\�ΈMN]����\��[ۗ�Z[��
+�K���YZΈ	̌��L�LL	�X�]�W��Y[�Έ̍K�[��\�ΈM�L]����\��[ۗ�Z[��
+K���YZΈ	̌��L�LM��X�]�W��Y[�Έ��[��\�ΈM̌]����\��[ۗ�Z[��
 
-  _topics() {
-    return { topics: [
-      { id: 1, name: 'Photosynthesis', chapter_number: 1, board: 'CBSE', difficulty_level: 'Medium' },
-      { id: 2, name: 'Cell Biology', chapter_number: 2, board: 'CBSE', difficulty_level: 'Easy' },
-      { id: 3, name: 'Genetics & Heredity', chapter_number: 3, board: 'CBSE', difficulty_level: 'Hard' },
-      { id: 4, name: 'Newton\'s Laws', chapter_number: 1, board: 'CBSE', difficulty_level: 'Medium' },
-      { id: 5, name: 'Electromagnetic Induction', chapter_number: 5, board: 'CBSE', difficulty_level: 'Hard' },
-    ]};
-  }
+K�K��]�\�[ې��\X[��N����\X[��T�]N�
+̋��\]Y��
+ݙ\�YN�
+N��\Y�
+L�K�ZN���[ܙ\]Y\�Έ
+M�[�����	����	��Z[\�\ΈL�K�]�\���Y[�Έ��Y[��Y�
+K�X��X��Y����\��]W��\�̋��[��	�X�[�[���K���Y[��Y�L��X��X��Y�K��\��]W��\����[��	�X�[�[���K���Y[��Y�N�X��X��Y����\��]W��\��K�K�[��	��X�I�K�K��\��ܛY\�Έ��Y[��Y�
+�X��X��Y����\��]W��\�L��K�[��	�[\�ݚ[���K���Y[��Y���X��X��Y�K��\��]W��\����[��	�[\�ݚ[���K���Y[��Y�K�X��X��Y����\��]W��\�K���[��	�[\�ݚ[���K�K��Y]�ܚΈ���\][۔�]N�
+��HK�[��Y�[Y[�Y]�X�Έ�]��Z[T�YSZ[����K�[�\��[ۜ��YZΈ̍]�ћ��\���ܙN��K�NB���XX�\�Y��X�]�[�\��
+H�]\���XX�\�Έ�XX�\��Y�K�۝[��YX�\Έ
 
-  _adminNotifications() {
-    return {
-      notifications: [
-        { id: 1, type: 'system_alert', title: 'System Performance', message: 'Server CPU usage is 72%. Monitor closely.', created_at: '2026-03-20T10:45:00Z', read: false },
-        { id: 2, type: 'new_registration', title: 'New Registrations', message: '12 new students registered in the last 24 hours', created_at: '2026-03-20T08:00:00Z', read: false },
-        { id: 3, type: 'system_alert', title: 'Database Backup', message: 'Scheduled backup completed successfully', created_at: '2026-03-19T02:30:00Z', read: true },
-        { id: 4, type: 'new_registration', title: 'New Teacher Registration', message: 'New teacher registered: Meera Nair', created_at: '2026-03-18T15:20:00Z', read: true },
-      ],
-    };
-  }
+KX�\��ܙX]Y��K��XX�\��Y���۝[��YX�\Έ�X�\��ܙX]Y�NMHK��XX�\��Y���۝[��YX�\Έ̋X�\��ܙX]Y��LK��XX�\��Y�
+�۝[��YX�\Έ�X�\��ܙX]Y�M�HK��XX�\��Y�
+K�۝[��YX�\Έ��X�\��ܙX]Y�L�K�_NB����\����\\�\�ۊ
+H�]\����\��\Έ��\���Y��X�[ۗ�Y�	�I�]����\�
+�K���Y[����[��
 
-  // Principal
-  _principalOverview() {
-    return {
-      school: { totalStudents: 450, totalTeachers: 28, integrationMode: 'standalone' },
-      sip: { avg_sip: 64.7, median_sip: 62.3, excellent: 52, good: 145, average: 168, needs_help: 85 },
-      subjectBreakdown: [
-        { subject_id: 1, avg_sip: 68.4, student_count: 420, improving: 180, declining: 45 },
-        { subject_id: 2, avg_sip: 58.2, student_count: 410, improving: 120, declining: 85 },
-        { subject_id: 3, avg_sip: 72.1, student_count: 440, improving: 210, declining: 35 },
-      ],
-      engagementTrend: [
-        { week: '2026-02-24', active_students: 280, total_hours: 1420, avg_session_min: 38 },
-        { week: '2026-03-03', active_students: 310, total_hours: 1580, avg_session_min: 42 },
-        { week: '2026-03-10', active_students: 325, total_hours: 1650, avg_session_min: 40 },
-        { week: '2026-03-17', active_students: 340, total_hours: 1720, avg_session_min: 44 },
-      ],
-      revisionCompliance: { complianceRate: 72, completed: 2840, overdue: 580, skipped: 520 },
-      ai: { total_requests: 8540, total_cost: '42.30', failures: 12 },
-      atRiskStudents: [
-        { student_id: 5, subject_id: 2, composite_sip: 32.4, trend: 'declining' },
-        { student_id: 12, subject_id: 1, composite_sip: 28.8, trend: 'declining' },
-        { student_id: 18, subject_id: 3, composite_sip: 35.1, trend: 'stable' },
-      ],
-      topPerformers: [
-        { student_id: 4, subject_id: 3, composite_sip: 92.5, trend: 'improving' },
-        { student_id: 2, subject_id: 1, composite_sip: 88.3, trend: 'improving' },
-        { student_id: 1, subject_id: 3, composite_sip: 81.2, trend: 'improving' },
-      ],
-    };
-  }
+HK���\���Y��X�[ۗ�Y�	Љ�]����\�
+���Y[����[��
+�K���\���Y�K�X�[ۗ�Y�	�I�]����\�
+��K�Y[����[��
+K���\���Y�K�X�[ۗ�Y�	Љ�]����\�
+���K�Y[����[��
 
-  _teacherEffectiveness() {
-    return { teachers: [
-      { teacher_id: 1, content_pieces: 45, mcqs_created: 280 },
-      { teacher_id: 2, content_pieces: 38, mcqs_created: 195 },
-      { teacher_id: 3, content_pieces: 32, mcqs_created: 210 },
-      { teacher_id: 4, content_pieces: 28, mcqs_created: 165 },
-      { teacher_id: 5, content_pieces: 22, mcqs_created: 120 },
-    ]};
-  }
+K���\���Y�L�X�[ۗ�Y�	�I�]����\�
+�����Y[����[��
+K���\���Y�L�X�[ۗ�Y�	Љ�]����\�
+NK��Y[����[���K�_NB���[۝T�[[X\�J
+H�]\��[۝Q[��Y�[Y[���[۝�	̌�KLLLI�X�]�W��Y[�Έ��[��\�Έ
+L�K��[۝�	̌�KLLKLI�X�]�W��Y[�Έ�L�[��\�Έ
+NK��[۝�	̌�KLL�LI�X�]�W��Y[�Έ�L�[��\�Έ
 
-  _classComparison() {
-    return { classes: [
-      { class_id: 8, section_id: 'A', avg_sip: 71.2, student_count: 45 },
-      { class_id: 8, section_id: 'B', avg_sip: 64.8, student_count: 42 },
-      { class_id: 9, section_id: 'A', avg_sip: 68.5, student_count: 48 },
-      { class_id: 9, section_id: 'B', avg_sip: 62.1, student_count: 44 },
-      { class_id: 10, section_id: 'A', avg_sip: 66.3, student_count: 40 },
-      { class_id: 10, section_id: 'B', avg_sip: 59.4, student_count: 38 },
-    ]};
-  }
+LK��[۝�	̌��LKLI�X�]�W��Y[�Έ̌�[��\�Έ
+�LK��[۝�	̌��L�LI�X�]�W��Y[�Έ��[��\�Έ
+�K��[۝�	̌��L�LI�X�]�W��Y[�Έ�L�[��\�Έ
+�K�K�[۝SX�N��[۝�	̌�KLLLI��[�[���\�ΈL��ܜ�X��[���\�Έ
+�K��[۝�	̌�KLLKLI��[�[���\�ΈM
+L�ܜ�X��[���\�ΈMLK��[۝�	̌�KLL�LI��[�[���\�ΈL��ܜ�X��[���\�Έ
+�K��[۝�	̌��LKLI��[�[���\�ΈMN�ܜ�X��[���\�ΈLLK��[۝�	̌��L�LI��[�[���\�ΈM�L�ܜ�X��[���\�ΈLM�K��[۝�	̌��L�LI��[�[���\�ΈM̌�ܜ�X��[���\�ΈL�K�K�[۝Q�X�Έ�[۝�	̌�KLLLI��[��X�Έ
 
-  _monthlySummary() {
-    return {
-      monthlyEngagement: [
-        { month: '2025-10-01', active_students: 280, total_hours: 5200 },
-        { month: '2025-11-01', active_students: 310, total_hours: 5800 },
-        { month: '2025-12-01', active_students: 250, total_hours: 4500 },
-        { month: '2026-01-01', active_students: 320, total_hours: 6100 },
-        { month: '2026-02-01', active_students: 340, total_hours: 6400 },
-        { month: '2026-03-01', active_students: 350, total_hours: 6800 },
-      ],
-      monthlyMcq: [
-        { month: '2025-10-01', total_answers: 12000, correct_answers: 7800 },
-        { month: '2025-11-01', total_answers: 14500, correct_answers: 9500 },
-        { month: '2025-12-01', total_answers: 10200, correct_answers: 6800 },
-        { month: '2026-01-01', total_answers: 15800, correct_answers: 10900 },
-        { month: '2026-02-01', total_answers: 16500, correct_answers: 11600 },
-        { month: '2026-03-01', total_answers: 17200, correct_answers: 12400 },
-      ],
-      monthlyDoubts: [
-        { month: '2025-10-01', total_doubts: 450, resolved_doubts: 380 },
-        { month: '2025-11-01', total_doubts: 520, resolved_doubts: 460 },
-        { month: '2025-12-01', total_doubts: 380, resolved_doubts: 340 },
-        { month: '2026-01-01', total_doubts: 580, resolved_doubts: 530 },
-        { month: '2026-02-01', total_doubts: 610, resolved_doubts: 565 },
-        { month: '2026-03-01', total_doubts: 640, resolved_doubts: 600 },
-      ],
-    };
-  }
+L�\���Y��X�Έ�K��[۝�	̌�KLLKLI��[��X�Έ
+L��\���Y��X�Έ
 
-  // Convenience wrappers matching api.js interface
-  async login(u, p) { return this.request('POST', '/auth/login', { username: u, password: p }); }
-  async logout() { return this.request('POST', '/auth/logout'); }
-  async me() { return this.request('GET', '/auth/me'); }
-  async studentDashboard() { return this.request('GET', '/student/dashboard'); }
-  async startEngagement(d) { return { sessionId: 1, startTime: new Date().toISOString() }; }
-  async heartbeat(d) { return { status: 'ok' }; }
-  async endEngagement(d) { return { status: 'completed' }; }
-  async getMcqPractice(t, c) { return this.request('GET', `/student/mcq/practice?topicId=${t}&count=${c}`); }
-  async submitMcqAnswer(d) { return this.request('POST', '/student/mcq/answer', d); }
-  async getSipScores() { return this.request('GET', '/student/sip'); }
-  async getRevisions() { return this.request('GET', '/student/revisions'); }
-  async completeRevision(id) { return { status: 'completed' }; }
-  async askDoubt(d) { return { id: 99, ai_response: 'Great question! Let me explain...' }; }
-  async getDoubts() { return this.request('GET', '/student/doubts'); }
-  async getGamification() { return this.request('GET', '/student/gamification'); }
-  async getStudyPlans() { return this.request('GET', '/student/study-plans'); }
-  async getEngagementHistory() { return this.request('GET', '/student/engagement/history'); }
-  async getQuestionPapers() { return this.request('GET', '/student/question-papers'); }
-  async getHomework() { return this.request('GET', '/student/homework'); }
-  async getReportCard() { return this.request('GET', '/student/report-card'); }
-  async getStudentNotifications() { return this.request('GET', '/student/notifications'); }
-  async getAttendance() { return this.request('GET', '/student/attendance'); }
-  async teacherDashboard() { return this.request('GET', '/teacher/dashboard'); }
-  async uploadContent(d) { return { id: 99 }; }
-  async getContent(p) { return this.request('GET', '/teacher/content'); }
-  async getMcqReviewQueue(p) { return this.request('GET', '/teacher/mcq/review'); }
-  async reviewMcq(id, d) { return { status: 'reviewed' }; }
-  async getClassAnalytics(c, s) { return this.request('GET', '/teacher/analytics/class'); }
-  async getEscalatedDoubts() { return this.request('GET', '/teacher/doubts'); }
-  async respondToDoubt(id, r) { return { status: 'responded' }; }
-  async getTeacherHomework() { return this.request('GET', '/teacher/homework'); }
-  async getTeacherNotifications() { return this.request('GET', '/teacher/notifications'); }
-  async parentDashboard() { return this.request('GET', '/parent/dashboard'); }
-  async getChildSip(s) { return this.request('GET', `/parent/child/${s}/sip`); }
-  async getChildEngagement(s) { return { sessions: [] }; }
-  async getConsents() { return this.request('GET', '/parent/consent'); }
-  async updateConsent(d) { return { status: 'updated' }; }
-  async getParentNotifications() { return this.request('GET', '/parent/notifications'); }
-  async markNotificationRead(id) { return { status: 'read' }; }
-  async adminDashboard() { return this.request('GET', '/admin/dashboard'); }
-  async getStudents(p) { return this.request('GET', '/admin/students'); }
-  async getAiUsage(d) { return this.request('GET', '/admin/ai-usage'); }
-  async getSystemInfo() { return this.request('GET', '/admin/system'); }
-  async getTopics(s) { return this.request('GET', '/admin/topics'); }
-  async createTopic(d) { return { id: 99 }; }
-  async broadcastNotification(d) { return { status: 'queued' }; }
-  async getAdminNotifications() { return this.request('GET', '/admin/notifications'); }
-  async principalOverview() { return this.request('GET', '/principal/overview'); }
-  async teacherEffectiveness() { return this.request('GET', '/principal/teacher-effectiveness'); }
-  async classComparison() { return this.request('GET', '/principal/class-comparison'); }
-  async monthlySummary() { return this.request('GET', '/principal/monthly-summary'); }
-  async getFocusStats() { return this.request('GET', '/student/focus/stats'); }
-  async getChildFocusAudit(s, d) { return this.request('GET', `/student/focus/child/${s}/audit`); }
-  async getChildFocusSettings(s) { return this.request('GET', `/student/focus/child/${s}/settings`); }
-  async updateChildFocusSettings(s, d) { return { settings: d }; }
-  async getSchoolFocusReport() { return this.request('GET', '/student/focus/school-report'); }
-  async getPlannerCategories() { return this.request('GET', '/planner/categories'); }
-  async createPlannerCategory(d) { return { category: { id: 99, ...d } }; }
-  async getPlannerTemplates(s) { return { templates: [] }; }
-  async createPlannerTemplate(d) { return { template: { id: 1, ...d } }; }
-  async activatePlannerTemplate(id) { return { status: 'activated' }; }
-  async getPlannerEntries(s, p) { return this.request('GET', `/planner/entries/${s}`); }
-  async createPlannerEntry(d) { return { entryId: 99 }; }
-  async updatePlannerEntry(id, d) { return { status: 'updated' }; }
-  async deletePlannerEntry(id) { return { status: 'deleted' }; }
-  async markPlannerCompletion(d) { return { completionId: 1 }; }
-  async getPlannerCompletions(s, p) { return this.request('GET', `/planner/completions/${s}`); }
-  async getPlannerInsights(s, d) { return this.request('GET', `/planner/insights/${s}`); }
-  async getMySchedule() { return this.request('GET', '/planner/my-schedule'); }
-}
+�K��[۝�	̌�KLL�LI��[��X�Έ��\���Y��X�Έ�K��[۝�	̌��LKLI��[��X�Έ
+N�\���Y��X�Έ
+L�K��[۝�	̌��L�LI��[��X�Έ
+�L�\���Y��X�Έ
+M�HK��[۝�	̌��L�LI��[��X�Έ
+��\���Y��X�Έ
+�K�K�NB�����۝�[�Y[��Hܘ\\��X]�[��\K���[�\��X�B�\�[����[�K
+H��]\��\˜�\]Y\�
+	���	�	��]]���[���\�\��[YN�K\���ܙ�JN�B�\�[�����]
 
-window.api = new SmartStudyAPI();
+H��]\��\˜�\]Y\�
+	���	�	��]]����]	�N�B�\�[��YJ
+H��]\��\˜�\]Y\�
+	��U	�	��]]�YI�N�B�\�[���Y[�\���\�
+
+H��]\��\˜�\]Y\�
+	��U	�	���Y[��\���\�	�N�B�\�[���\�[��Y�[Y[�
+
+H��]\����\��[ےY�K�\�[YN��]�]J
+K��T����[��
+HN�B�\�[��X\��X]
+
+H��]\����]\Έ	����N�B�\�[��[�[��Y�[Y[�
+
+H��]\����]\Έ	���\]Y	�N�B�\�[���]X�T�X�X�J�H��]\��\˜�\]Y\�
+	��U	���Y[��X�K��X�X�O��X�YI�I���[�I��X
+N�B�\�[���X�Z]X�P[���\�
+H��]\��\˜�\]Y\�
+	���	�	���Y[��X�K�[���\��
+N�B�\�[���]�\��ܙ\�
+H��]\��\˜�\]Y\�
+	��U	�	���Y[���\	�N�B�\�[���]�]�\�[ۜ�
+H��]\��\˜�\]Y\�
+	��U	�	���Y[�ܙ]�\�[ۜ��N�B�\�[����\]T�]�\�[ۊY
+H��]\����]\Έ	���\]Y	�N�B�\�[��\���X�
+
+H��]\���Y�NKZWܙ\�ۜ�N�	�ܙX]]Y\�[ۈH]YH^Z[�����N�B�\�[���]�X��
+H��]\��\˜�\]Y\�
+	��U	�	���Y[���X���N�B�\�[���]�[ZY�X�][ۊ
+H��]\��\˜�\]Y\�
+	��U	�	���Y[���[ZY�X�][ۉ�N�B�\�[���]�YT[��
+H��]\��\˜�\]Y\�
+	��U	�	���Y[���YK\[���N�B�\�[���][��Y�[Y[�\�ܞJ
+H��]\��\˜�\]Y\�
+	��U	�	���Y[��[��Y�[Y[��\�ܞI�N�B�\�[���]]Y\�[۔\\��
+H��]\��\˜�\]Y\�
+	��U	�	���Y[��]Y\�[ۋ\\\���N�B�\�[���]�Y]�ܚ�
+H��]\��\˜�\]Y\�
+	��U	�	���Y[���Y]�ܚ��N�B�\�[���]�\ܝ�\�
+
+H��]\��\˜�\]Y\�
+	��U	�	���Y[�ܙ\ܝX�\�	�N�B�\�[���]�Y[���Y�X�][ۜ�
+H��]\��\˜�\]Y\�
+	��U	�	���Y[�ۛ�Y�X�][ۜ��N�B�\�[���]][�[��J
+H��]\��\˜�\]Y\�
+	��U	�	���Y[��][�[��I�N�B�\�[��XX�\�\���\�
+
+H��]\��\˜�\]Y\�
+	��U	�	��XX�\��\���\�	�N�B�\�[��\�Y�۝[�
+
+H��]\���Y�NHN�B�\�[���]�۝[�
+
+H��]\��\˜�\]Y\�
+	��U	�	��XX�\���۝[�	�N�B�\�[���]X�T�]�Y]�]Y]YJ
+H��]\��\˜�\]Y\�
+	��U	�	��XX�\��X�Kܙ]�Y]��N�B�\�[���]�Y]�X�JY
+H��]\����]\Έ	ܙ]�Y]�Y	�N�B�\�[���]�\��[�[]X����H��]\��\˜�\]Y\�
+	��U	�	��XX�\��[�[]X����\���N�B�\�[���]\��[]Y�X��
+H��]\��\˜�\]Y\�
+	��U	�	��XX�\���X���N�B�\�[���\�ۙ��X�
+Y�H��]\����]\Έ	ܙ\�ۙY	�N�B�\�[���]XX�\��Y]�ܚ�
+H��]\��\˜�\]Y\�
+	��U	�	��XX�\���Y]�ܚ��N�B�\�[���]XX�\���Y�X�][ۜ�
+H��]\��\˜�\]Y\�
+	��U	�	��XX�\�ۛ�Y�X�][ۜ��N�B�\�[��\�[�\���\�
+
+H��]\��\˜�\]Y\�
+	��U	�	��\�[��\���\�	�N�B�\�[���]�[�\
+�H��]\��\˜�\]Y\�
+	��U	��\�[���[���K��\
+N�B�\�[���]�[[��Y�[Y[�
+�H��]\���[[X\�N���^SZ[�]\ΈN
+K�YZ�Z[�]\ΈL
+MK��X��X��	�X][X]X���K�Z[N��]N�	̌��L�LM	�Z[�]\���YYY��
+K�\��[ۗ���[��
+�[X\�W��X��X��	�X][X]X���K��]N�	̌��L�LMI�Z[�]\���YYY��L�\��[ۗ���[��
+K�[X\�W��X��X��	К[���I�K��]N�	̌��L�LM��Z[�]\���YYY�NMK�\��[ۗ���[����[X\�W��X��X��	�\�X���K��]N�	̌��L�LM��Z[�]\���YYY���\��[ۗ���[��
+�[X\�W��X��X��	�X][X]X���K��]N�	̌��L�LN	�Z[�]\���YYY���\��[ۗ���[��
+��[X\�W��X��X��	К[���I�K��]N�	̌��L�LNI�Z[�]\���YYY���K�\��[ۗ���[��
+�[X\�W��X��X��	�X][X]X���K��]N�	̌��L�L�	�Z[�]\���YYY����\��[ۗ���[����[X\�W��X��X��	�\�X���K�K��W��X��X����X��X�ۘ[YN�	�X][X]X����[�Z[�]\Έ
+͌�\��[ۗ���[��M��܎�	��؎����K���X��X�ۘ[YN�	К[���I��[�Z[�]\Έ
+NMK�\��[ۗ���[��L���܎�	��L�NI�K���X��X�ۘ[YN�	�\�X����[�Z[�]\Έ
+L�\��[ۗ���[��L��܎�	�ٍNYL��K�K�N�B�\�[���]�ۜ�[��
+H��]\��\˜�\]Y\�
+	��U	�	��\�[���ۜ�[�	�N�B�\�[��\]P�ۜ�[�
+
+H��]\����]\Έ	�\]Y	�N�B�\�[���]\�[���Y�X�][ۜ�
+H��]\��\˜�\]Y\�
+	��U	�	��\�[�ۛ�Y�X�][ۜ��N�B�\�[��X\�ӛ�Y�X�][۔�XY
+Y
+H��]\����]\Έ	ܙXY	�N�B�\�[��YZ[�\���\�
+
+H��]\��\˜�\]Y\�
+	��U	�	��YZ[��\���\�	�N�B�\�[���]�Y[��
+H��]\��\˜�\]Y\�
+	��U	�	��YZ[���Y[���N�B�\�[���]ZU\�Y�J
+H��]\��\˜�\]Y\�
+	��U	�	��YZ[��ZK]\�Y�I�N�B�\�[���]�\�[R[���
+H��]\��\˜�\]Y\�
+	��U	�	��YZ[���\�[I�N�B�\�[���]�X���H��]\��\˜�\]Y\�
+	��U	�	��YZ[���X���N�B�\�[��ܙX]U�X�
+H��]\���Y�NHN�B�\�[�����Y�\���Y�X�][ۊ
+H��]\����]\Έ	�]Y]YY	�N�B�\�[���]YZ[���Y�X�][ۜ�
+H��]\��\˜�\]Y\�
+	��U	�	��YZ[�ۛ�Y�X�][ۜ��N�B�\�[���[��\[ݙ\��Y]�
+H��]\��\˜�\]Y\�
+	��U	�	���[��\[�ݙ\��Y]��N�B�\�[��XX�\�Y��X�]�[�\��
+H��]\��\˜�\]Y\�
+	��U	�	���[��\[�XX�\�YY��X�]�[�\���N�B�\�[���\����\\�\�ۊ
+H��]\��\˜�\]Y\�
+	��U	�	���[��\[��\��X��\\�\�ۉ�N�B�\�[��[۝T�[[X\�J
+H��]\��\˜�\]Y\�
+	��U	�	���[��\[�[۝K\�[[X\�I�N�B�\�[���]���\��]�
+H��]\��\˜�\]Y\�
+	��U	�	���Y[�ٛ��\���]��N�B�\�[���]�[���\�]Y]
+�
+H��]\��\˜�\]Y\�
+	��U	���Y[�ٛ��\���[���K�]Y]
+N�B�\�[���]�[���\��][����H��]\��\˜�\]Y\�
+	��U	���Y[�ٛ��\���[���K��][���
+N�B�\�[��\]P�[���\��][����
+H��]\����][��ΈN�B�\�[���]�������\ԙ\ܝ
+
+H��]\��\˜�\]Y\�
+	��U	�	���Y[�ٛ��\������\�\ܝ	�N�B�\�[���][��\��]Y�ܚY\�
+H��]\��\˜�\]Y\�
+	��U	�	��[��\���]Y�ܚY\��N�B�\�[��ܙX]T[��\��]Y�ܞJ
+H��]\����]Y�ܞN��Y�NK���HN�B�\�[���][��\�[\]\��H��]\���[\]\Έ�HN�B�\�[��ܙX]T[��\�[\]J
+H��]\���[\]N��Y�K���HN�B�\�[��X�]�]T[��\�[\]JY
+H��]\����]\Έ	�X�]�]Y	�N�B�\�[���][��\�[��Y\��
+H��]\��\˜�\]Y\�
+	��U	��[��\��[��Y\����X
+N�B�\�[��ܙX]T[��\�[��J
+H��]\���[��RY�NHN�B�\�[��\]T[��\�[��JY
+H��]\����]\Έ	�\]Y	�N�B�\�[��[]T[��\�[��JY
+H��]\����]\Έ	�[]Y	�N�B�\�[��X\��[��\���\][ۊ
+H��]\�����\][ےY�HN�B�\�[���][��\���\][ۜ��
+H��]\��\˜�\]Y\�
+	��U	��[��\����\][ۜ����X
+N�B�\�[���][��\�[��Y���
+H��]\��\˜�\]Y\�
+	��U	��[��\��[��Y�����X
+N�B�\�[���]^T��Y[J
+H��]\��\˜�\]Y\�
+	��U	�	��[��\��^K\��Y[I�N�B�B���[��˘\HH�]��X\��YPTJ
+N�
