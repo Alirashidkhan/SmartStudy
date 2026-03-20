@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartStudy â Principal Dashboard</title>
+  
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="logo">SmartStudy</div>
+      <div class="subtitle">Principal</div>
+      <nav>
+        <a href="#" class="active" data-section="overview">ð School Overview</a>
+        <a href="#" data-section="class-comparison">ð« Class Comparison</a>
+        <a href="#" data-section="teachers">ð©âð« Teacher Effectiveness</a>
+        <a href="#" data-section="monthly">ð Monthly Trends</a>
+      </nav>
+      <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
+    </aside>
+
+    <main class="main-content">
+
+      <!-- School Overview -->
+      <section id="section-overview">
+        <div class="page-header">
+          <h1>School Overview</h1>
+          <div class="badge" id="modeBadge">Loading...</div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card"><div class="label">Total Students</div><div class="value" id="totalStudents">--</div></div>
+          <div class="stat-card"><div class="label">Total Teachers</div><div class="value" id="totalTeachers">--</div></div>
+          <div class="stat-card"><div class="label">Avg SIP (School)</div><div class="value" id="avgSip">--</div></div>
+          <div class="stat-card"><div class="label">Median SIP</div><div class="value" id="medianSip">--</div></div>
+        </div>
+
+        <!-- SIP Distribution -->
+        <div class="card">
+          <div class="card-header"><h3>SIP Distribution</h3></div>
+          <div class="stats-grid" id="sipDistribution">
+            <div class="stat-card"><div class="label">Excellent (â¥80)</div><div class="value sip-excellent" id="sipExcellent">--</div></div>
+            <div class="stat-card"><div class="label">Good (60â79)</div><div class="value sip-good" id="sipGood">--</div></div>
+            <div class="stat-card"><div class="label">Average (40â59)</div><div class="value sip-average" id="sipAverage">--</div></div>
+            <div class="stat-card"><div class="label">Needs Help (&lt;40)</div><div class="value sip-low" id="sipNeedsHelp">--</div></div>
+          </div>
+        </div>
+
+        <!-- Subject Breakdown -->
+        <div class="card">
+          <div class="card-header"><h3>Subject-wise SIP</h3></div>
+          <table>
+            <thead><tr><th>Subject</th><th>Avg SIP</th><th>Students</th><th>Improving</th><th>Declining</th></tr></thead>
+            <tbody id="subjectBreakdown"></tbody>
+          </table>
+        </div>
+
+        <!-- Engagement Trend -->
+        <div class="card">
+          <div class="card-header"><h3>Weekly Engagement (Last 4 Weeks)</h3></div>
+          <table>
+            <thead><tr><th>Week</th><th>Active Students</th><th>Total Hours</th><th>Avg Session (min)</th></tr></thead>
+            <tbody id="engagementTrend"></tbody>
+          </table>
+        </div>
+
+        <!-- Revision Compliance -->
+        <div class="card">
+          <div class="card-header"><h3>Revision Compliance (30 Days)</h3></div>
+          <div class="stats-grid">
+            <div class="stat-card"><div class="label">Compliance Rate</div><div class="value" id="complianceRate">--</div></div>
+            <div class="stat-card"><div class="label">Completed</div><div class="value" id="revCompleted">--</div></div>
+            <div class="stat-card"><div class="label">Overdue</div><div class="value" id="revOverdue">--</div></div>
+            <div class="stat-card"><div class="label">Skipped</div><div class="value" id="revSkipped">--</div></div>
+          </div>
+        </div>
+
+        <!-- AI Costs -->
+        <div class="card">
+          <div class="card-header"><h3>AI Usage (30 Days)</h3></div>
+          <div class="stats-grid">
+            <div class="stat-card"><div class="label">Total Requests</div><div class="value" id="aiRequests">--</div></div>
+            <div class="stat-card"><div class="label">Total Cost</div><div class="value" id="aiCost">--</div></div>
+            <div class="stat-card"><div class="label">Failures</div><div class="value" id="aiFailures">--</div></div>
+          </div>
+        </div>
+
+        <!-- At-Risk Students -->
+        <div class="card">
+          <div class="card-header"><h3>At-Risk Students (SIP &lt; 40)</h3></div>
+          <table>
+            <thead><tr><th>Student ID</th><th>Subject</th><th>SIP</th><th>Trend</th></tr></thead>
+            <tbody id="atRiskList"></tbody>
+          </table>
+        </div>
+
+        <!-- Top Performers -->
+        <div class="card">
+          <div class="card-header"><h3>Top Performers (SIP â¥ 85)</h3></div>
+          <table>
+            <thead><tr><th>Student ID</th><th>Subject</th><th>SIP</th><th>Trend</th></tr></thead>
+            <tbody id="topPerformersList"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Class Comparison -->
+      <section id="section-class-comparison" style="display:none">
+        <div class="page-header"><h1>Class Comparison</h1></div>
+        <div class="card">
+          <table>
+            <thead><tr><th>Class / Subject</th><th>Section</th><th>Avg SIP</th><th>Students</th></tr></thead>
+            <tbody id="classComparisonList"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Teacher Effectiveness -->
+      <section id="section-teachers" style="display:none">
+        <div class="page-header"><h1>Teacher Effectiveness</h1></div>
+        <div class="card">
+          <table>
+            <thead><tr><th>Teacher ID</th><th>Content Uploaded</th><th>MCQs Created</th></tr></thead>
+            <tbody id="teacherList"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Monthly Trends -->
+      <section id="section-monthly" style="display:none">
+        <div class="page-header"><h1>Monthly Trends (6 Months)</h1></div>
+
+        <div class="card">
+          <div class="card-header"><h3>Engagement</h3></div>
+          <table>
+            <thead><tr><th>Month</th><th>Active Students</th><th>Total Hours</th></tr></thead>
+            <tbody id="monthlyEngagement"></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>MCQ Performance</h3></div>
+          <table>
+            <thead><tr><th>Month</th><th>Total Answers</th><th>Correct</th><th>Accuracy</th></tr></thead>
+            <tbody id="monthlyMcq"></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>Doubt Resolution</h3></div>
+          <table>
+            <thead><tr><th>Month</th><th>Total Doubts</th><th>Resolved</th><th>Resolution %</th></tr></thead>
+            <tbody id="monthlyDoubts"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="js/mock-api.js"></script>
+  <script>
+    // Navigation
+    document.querySelectorAll('[data-section]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const section = link.dataset.section;
+        document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+        document.getElementById(`section-${section}`).style.display = 'block';
+        document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+        link.classList.add('active');
+
+        if (section === 'class-comparison') loadClassComparison();
+        if (section === 'teachers') loadTeachers();
+        if (section === 'monthly') loadMonthly();
+      });
+    });
+
+    async function handleLogout() {
+      try { await api.logout(); } catch {}
+      window.location.href = 'index.html';
+    }
+
+    function trendBadge(trend) {
+      if (trend === 'improving') return '<span style="color: var(--success)">â Improving</span>';
+      if (trend === 'declining') return '<span style="color: var(--danger)">â Declining</span>';
+      return '<span style="color: var(--text-secondary)">â Stable</span>';
+    }
+
+    function formatMonth(dateStr) {
+      return new Date(dateStr).toLocaleDateString('en-IN', { year: 'numeric', month: 'short' });
+    }
+
+    function formatWeek(dateStr) {
+      return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+    }
+
+    // ---- School Overview ----
+    async function loadOverview() {
+      try {
+        const data = await api.principalOverview();
+
+        // School stats
+        document.getElementById('modeBadge').textContent = data.school.integrationMode.toUpperCase();
+        document.getElementById('totalStudents').textContent = data.school.totalStudents;
+        document.getElementById('totalTeachers').textContent = data.school.totalTeachers;
+
+        const sip = data.sip || {};
+        document.getElementById('avgSip').textContent = sip.avg_sip || '--';
+        document.getElementById('medianSip').textContent = sip.median_sip || '--';
+
+        // SIP Distribution
+        document.getElementById('sipExcellent').textContent = sip.excellent || 0;
+        document.getElementById('sipGood').textContent = sip.good || 0;
+        document.getElementById('sipAverage').textContent = sip.average || 0;
+        document.getElementById('sipNeedsHelp').textContent = sip.needs_help || 0;
+
+        // Subject breakdown
+        document.getElementById('subjectBreakdown').innerHTML = (data.subjectBreakdown || []).map(s => `
+          <tr>
+            <td>Subject ${s.subject_id}</td>
+            <td><strong>${s.avg_sip}</strong></td>
+            <td>${s.student_count}</td>
+            <td style="color: var(--success)">${s.improving || 0}</td>
+            <td style="color: var(--danger)">${s.declining || 0}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="5">No subject data</td></tr>';
+
+        // Engagement trend
+        document.getElementById('engagementTrend').innerHTML = (data.engagementTrend || []).map(w => `
+          <tr>
+            <td>${formatWeek(w.week)}</td>
+            <td>${w.active_students}</td>
+            <td>${parseFloat(w.total_hours || 0).toFixed(1)}</td>
+            <td>${w.avg_session_min || '--'}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="4">No engagement data</td></tr>';
+
+        // Revision compliance
+        const rev = data.revisionCompliance || {};
+        document.getElementById('complianceRate').textContent = (rev.complianceRate || 0) + '%';
+        document.getElementById('revCompleted').textContent = rev.completed || 0;
+        document.getElementById('revOverdue').textContent = rev.overdue || 0;
+        document.getElementById('revSkipped').textContent = rev.skipped || 0;
+
+        // AI usage
+        const ai = data.ai || {};
+        document.getElementById('aiRequests').textContent = ai.total_requests || 0;
+        document.getElementById('aiCost').textContent = ai.total_cost ? `$${parseFloat(ai.total_cost).toFixed(2)}` : '$0';
+        document.getElementById('aiFailures').textContent = ai.failures || 0;
+
+        // At-risk students
+        document.getElementById('atRiskList').innerHTML = (data.atRiskStudents || []).map(s => `
+          <tr>
+            <td>${s.student_id}</td>
+            <td>Subject ${s.subject_id}</td>
+            <td><span class="sip-badge sip-low">${parseFloat(s.composite_sip).toFixed(1)}</span></td>
+            <td>${trendBadge(s.trend)}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="4">No at-risk students</td></tr>';
+
+        // Top performers
+        document.getElementById('topPerformersList').innerHTML = (data.topPerformers || []).map(s => `
+          <tr>
+            <td>${s.student_id}</td>
+            <td>Subject ${s.subject_id}</td>
+            <td><span class="sip-badge sip-excellent">${parseFloat(s.composite_sip).toFixed(1)}</span></td>
+            <td>${trendBadge(s.trend)}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="4">No top performers data</td></tr>';
+
+      } catch (err) { console.error('Failed to load overview', err); }
+    }
+
+    // ---- Class Comparison ----
+    async function loadClassComparison() {
+      try {
+        const data = await api.classComparison();
+        document.getElementById('classComparisonList').innerHTML = (data.classes || []).map(c => `
+          <tr>
+            <td>${c.class_id ? `Class ${c.class_id}` : `Subject ${c.subject_id}`}</td>
+            <td>${c.section_id || '-'}</td>
+            <td><strong>${c.avg_sip}</strong></td>
+            <td>${c.student_count}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="4">No class data</td></tr>';
+      } catch (err) { console.error(err); }
+    }
+
+    // ---- Teacher Effectiveness ----
+    async function loadTeachers() {
+      try {
+        const data = await api.teacherEffectiveness();
+        document.getElementById('teacherList').innerHTML = (data.teachers || []).map(t => `
+          <tr>
+            <td>${t.teacher_id}</td>
+            <td>${t.content_pieces}</td>
+            <td>${t.mcqs_created}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="3">No teacher data</td></tr>';
+      } catch (err) { console.error(err); }
+    }
+
+    // ---- Monthly Trends ----
+    async function loadMonthly() {
+      try {
+        const data = await api.monthlySummary();
+
+        document.getElementById('monthlyEngagement').innerHTML = (data.monthlyEngagement || []).map(m => `
+          <tr>
+            <td>${formatMonth(m.month)}</td>
+            <td>${m.active_students}</td>
+            <td>${parseFloat(m.total_hours || 0).toFixed(1)}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="3">No data</td></tr>';
+
+        document.getElementById('monthlyMcq').innerHTML = (data.monthlyMcq || []).map(m => {
+          const total = parseInt(m.total_answers || 0);
+          const correct = parseInt(m.correct_answers || 0);
+          const accuracy = total > 0 ? ((correct / total) * 100).toFixed(1) : 0;
+          return `<tr><td>${formatMonth(m.month)}</td><td>${total}</td><td>${correct}</td><td>${accuracy}%</td></tr>`;
+        }).join('') || '<tr><td colspan="4">No data</td></tr>';
+
+        document.getElementById('monthlyDoubts').innerHTML = (data.monthlyDoubts || []).map(m => {
+          const total = parseInt(m.total_doubts || 0);
+          const resolved = parseInt(m.resolved_doubts || 0);
+          const rate = total > 0 ? ((resolved / total) * 100).toFixed(1) : 0;
+          return `<tr><td>${formatMonth(m.month)}</td><td>${total}</td><td>${resolved}</td><td>${rate}%</td></tr>`;
+        }).join('') || '<tr><td colspan="4">No data</td></tr>';
+
+      } catch (err) { console.error(err); }
+    }
+
+    // Load overview on start
+    loadOverview();
+  </script>
+</body>
+</html>
