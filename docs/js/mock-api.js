@@ -1,5 +1,5 @@
 // ============================================================
-// SmartStudy v1.0 â Mock API for GitHub Pages Demo
+// SmartStudy v1.0 — Mock API for GitHub Pages Demo
 // ============================================================
 // Returns realistic demo data without a backend.
 // Password: manarix2026
@@ -34,7 +34,7 @@ class SmartStudyAPI {
     if (path === '/student/sip') return this._sipScores();
     if (path === '/student/revisions') return this._revisions();
     if (path === '/student/doubts') return { doubts: [
-      { id: 1, question: 'Why does photosynthesis need sunlight?', ai_response: 'Sunlight provides the energy needed to convert COâ and HâO into glucose. The light reactions in chloroplasts use photons to split water molecules and create ATP.', status: 'resolved', created_at: '2026-03-19T10:30:00Z' },
+      { id: 1, question: 'Why does photosynthesis need sunlight?', ai_response: 'Sunlight provides the energy needed to convert CO₂ and H₂O into glucose. The light reactions in chloroplasts use photons to split water molecules and create ATP.', status: 'resolved', created_at: '2026-03-19T10:30:00Z' },
       { id: 2, question: 'Difference between mitosis and meiosis?', ai_response: 'Mitosis produces 2 identical diploid cells (for growth/repair). Meiosis produces 4 unique haploid cells (for reproduction). Meiosis has crossing over and two divisions.', status: 'resolved', created_at: '2026-03-18T14:20:00Z' },
     ]};
     if (path === '/student/gamification') return this._gamification();
@@ -42,11 +42,17 @@ class SmartStudyAPI {
       { id: 1, title: 'Biology Week Plan', plan_data: { topics: ['Cell Biology', 'Genetics', 'Ecology'] }, status: 'active', created_at: '2026-03-17' },
     ]};
     if (path === '/student/focus/stats') return this._focusStats();
+    if (path === '/student/engagement/history') return this._engagementHistory();
+    if (path === '/student/question-papers') return this._questionPapers();
+    if (path === '/student/homework') return this._homework();
+    if (path === '/student/report-card') return this._reportCard();
+    if (path === '/student/notifications') return this._studentNotifications();
+    if (path === '/student/attendance') return this._attendance();
 
     // Teacher
     if (path === '/teacher/dashboard') return this._teacherDashboard();
     if (path.startsWith('/teacher/content')) return { content: [
-      { id: 1, title: 'Photosynthesis â Complete Guide', content_type: 'text', subject_id: 1, created_at: '2026-03-15' },
+      { id: 1, title: 'Photosynthesis — Complete Guide', content_type: 'text', subject_id: 1, created_at: '2026-03-15' },
       { id: 2, title: 'Newton\'s Laws of Motion', content_type: 'text', subject_id: 2, created_at: '2026-03-14' },
       { id: 3, title: 'Linear Equations Practice', content_type: 'pdf', subject_id: 3, created_at: '2026-03-13' },
     ]};
@@ -55,6 +61,8 @@ class SmartStudyAPI {
     if (path === '/teacher/doubts') return { doubts: [
       { id: 3, question: 'Can you explain the Krebs cycle in simpler terms?', student_id: 1, status: 'escalated', created_at: '2026-03-19' },
     ]};
+    if (path === '/teacher/homework') return this._teacherHomework();
+    if (path === '/teacher/notifications') return this._teacherNotifications();
 
     // Parent
     if (path === '/parent/dashboard') return this._parentDashboard();
@@ -88,6 +96,7 @@ class SmartStudyAPI {
     if (path.startsWith('/admin/ai-usage')) return this._aiUsage();
     if (path === '/admin/system') return this._systemInfo();
     if (path.startsWith('/admin/topics')) return this._topics();
+    if (path === '/admin/notifications') return this._adminNotifications();
 
     // Principal
     if (path === '/principal/overview') return this._principalOverview();
@@ -119,7 +128,7 @@ class SmartStudyAPI {
       streak: { current_streak: 12, longest_streak: 18, total_points: 2450, level: 5 },
       pendingRevisions: 3,
       recentActivity: [
-        { type: 'mcq', detail: 'Biology MCQ â 8/10 correct', created_at: '2026-03-19T15:30:00Z' },
+        { type: 'mcq', detail: 'Biology MCQ — 8/10 correct', created_at: '2026-03-19T15:30:00Z' },
         { type: 'content', detail: 'Read "Photosynthesis Guide"', created_at: '2026-03-19T14:00:00Z' },
         { type: 'revision', detail: 'Completed Cell Biology revision', created_at: '2026-03-18T16:00:00Z' },
       ],
@@ -128,9 +137,18 @@ class SmartStudyAPI {
 
   _mcqPractice() {
     return { questions: [
-      { id: 1, question_text: 'Which organelle is responsible for photosynthesis?', options: [{key:'A',text:'Mitochondria'},{key:'B',text:'Chloroplast'},{key:'C',text:'Ribosome'},{key:'D',text:'Golgi Body'}], difficulty: 'Medium' },
-      { id: 2, question_text: 'What is the powerhouse of the cell?', options: [{key:'A',text:'Nucleus'},{key:'B',text:'Chloroplast'},{key:'C',text:'Mitochondria'},{key:'D',text:'ER'}], difficulty: 'Easy' },
-      { id: 3, question_text: 'DNA replication occurs during which phase?', options: [{key:'A',text:'G1 phase'},{key:'B',text:'S phase'},{key:'C',text:'G2 phase'},{key:'D',text:'M phase'}], difficulty: 'Medium' },
+      { id: 1, question_text: 'Which organelle is responsible for photosynthesis?', options: [{key:'A',text:'Mitochondria'},{key:'B',text:'Chloroplast'},{key:'C',text:'Ribosome'},{key:'D',text:'Golgi Body'}], difficulty: 'Medium', subject: 'Biology' },
+      { id: 2, question_text: 'What is the powerhouse of the cell?', options: [{key:'A',text:'Nucleus'},{key:'B',text:'Chloroplast'},{key:'C',text:'Mitochondria'},{key:'D',text:'ER'}], difficulty: 'Easy', subject: 'Biology' },
+      { id: 3, question_text: 'DNA replication occurs during which phase?', options: [{key:'A',text:'G1 phase'},{key:'B',text:'S phase'},{key:'C',text:'G2 phase'},{key:'D',text:'M phase'}], difficulty: 'Medium', subject: 'Biology' },
+      { id: 4, question_text: 'What is the SI unit of force?', options: [{key:'A',text:'Dyne'},{key:'B',text:'Newton'},{key:'C',text:'Joule'},{key:'D',text:'Watt'}], difficulty: 'Easy', subject: 'Physics' },
+      { id: 5, question_text: 'Which law states F = ma?', options: [{key:'A',text:'First Law'},{key:'B',text:'Second Law'},{key:'C',text:'Third Law'},{key:'D',text:'Law of Gravitation'}], difficulty: 'Medium', subject: 'Physics' },
+      { id: 6, question_text: 'What is the speed of light in vacuum?', options: [{key:'A',text:'3 × 10^8 m/s'},{key:'B',text:'3 × 10^7 m/s'},{key:'C',text:'3 × 10^9 m/s'},{key:'D',text:'3 × 10^6 m/s'}], difficulty: 'Easy', subject: 'Physics' },
+      { id: 7, question_text: 'Solve: 2x + 5 = 13', options: [{key:'A',text:'x = 2'},{key:'B',text:'x = 3'},{key:'C',text:'x = 4'},{key:'D',text:'x = 5'}], difficulty: 'Easy', subject: 'Math' },
+      { id: 8, question_text: 'What is the value of π (approximately)?', options: [{key:'A',text:'2.14'},{key:'B',text:'3.14'},{key:'C',text:'4.14'},{key:'D',text:'5.14'}], difficulty: 'Easy', subject: 'Math' },
+      { id: 9, question_text: 'Find the area of a circle with radius 7 cm', options: [{key:'A',text:'154 cm²'},{key:'B',text:'144 cm²'},{key:'C',text:'164 cm²'},{key:'D',text:'174 cm²'}], difficulty: 'Medium', subject: 'Math' },
+      { id: 10, question_text: 'What is the chemical formula for salt?', options: [{key:'A',text:'NaCl'},{key:'B',text:'NaOH'},{key:'C',text:'H2O'},{key:'D',text:'HCl'}], difficulty: 'Easy', subject: 'Chemistry' },
+      { id: 11, question_text: 'Which element has atomic number 6?', options: [{key:'A',text:'Carbon'},{key:'B',text:'Oxygen'},{key:'C',text:'Nitrogen'},{key:'D',text:'Hydrogen'}], difficulty: 'Easy', subject: 'Chemistry' },
+      { id: 12, question_text: 'What is the main theme of "The Odyssey"?', options: [{key:'A',text:'War and Glory'},{key:'B',text:'Journey Home'},{key:'C',text:'Love and Loss'},{key:'D',text:'Power and Control'}], difficulty: 'Medium', subject: 'English' },
     ]};
   }
 
@@ -160,10 +178,10 @@ class SmartStudyAPI {
     return {
       streak: { current_streak: 12, longest_streak: 18, total_points: 2450, level: 5 },
       badges: [
-        { name: '7-Day Streak', icon: 'ð¥', earned_at: '2026-03-10' },
-        { name: 'First MCQ Perfect', icon: 'ð', earned_at: '2026-03-05' },
-        { name: 'Biology Master', icon: 'ð§¬', earned_at: '2026-03-12' },
-        { name: 'Quick Learner', icon: 'â¡', earned_at: '2026-03-08' },
+        { name: '7-Day Streak', icon: '🔥', earned_at: '2026-03-10' },
+        { name: 'First MCQ Perfect', icon: '🏆', earned_at: '2026-03-05' },
+        { name: 'Biology Master', icon: '🧬', earned_at: '2026-03-12' },
+        { name: 'Quick Learner', icon: '⚡', earned_at: '2026-03-08' },
       ],
       leaderboard: [
         { rank: 1, name: 'Arjun K.', points: 2450 },
@@ -182,6 +200,291 @@ class SmartStudyAPI {
         { engagement_id: 1, total_violations: 1, total_away_seconds: 25, focus_score: 95, start_time: '2026-03-19T14:00:00Z', active_seconds: 1800 },
         { engagement_id: 2, total_violations: 3, total_away_seconds: 120, focus_score: 85, start_time: '2026-03-18T15:00:00Z', active_seconds: 2400 },
       ],
+    };
+  }
+
+  _engagementHistory() {
+    return {
+      dailyStudyTime: [
+        { date: '2026-03-14', totalMinutes: 245, subjects: { Biology: 80, Physics: 65, Mathematics: 100 } },
+        { date: '2026-03-15', totalMinutes: 310, subjects: { Biology: 100, Physics: 85, Mathematics: 125 } },
+        { date: '2026-03-16', totalMinutes: 195, subjects: { Biology: 60, Physics: 50, Mathematics: 85 } },
+        { date: '2026-03-17', totalMinutes: 280, subjects: { Biology: 90, Physics: 75, Mathematics: 115 } },
+        { date: '2026-03-18', totalMinutes: 340, subjects: { Biology: 110, Physics: 95, Mathematics: 135 } },
+        { date: '2026-03-19', totalMinutes: 265, subjects: { Biology: 85, Physics: 70, Mathematics: 110 } },
+        { date: '2026-03-20', totalMinutes: 220, subjects: { Biology: 70, Physics: 60, Mathematics: 90 } },
+      ],
+      weeklyStats: { totalHours: 17.58, avgDailyMinutes: 265.4 },
+      deviceBreakdown: { mobile: 35, tablet: 25, desktop: 40 },
+      subjectBreakdown: { Biology: 595, Physics: 500, Mathematics: 760 },
+      sessions: [
+        { id: 1, subject: 'Biology', start_time: '2026-03-20T08:00:00Z', end_time: '2026-03-20T09:15:00Z', active_seconds: 4500, scroll_depth: 85, interaction_count: 42 },
+        { id: 2, subject: 'Mathematics', start_time: '2026-03-20T10:00:00Z', end_time: '2026-03-20T11:30:00Z', active_seconds: 5400, scroll_depth: 92, interaction_count: 68 },
+        { id: 3, subject: 'Physics', start_time: '2026-03-19T15:00:00Z', end_time: '2026-03-19T16:10:00Z', active_seconds: 4200, scroll_depth: 78, interaction_count: 35 },
+        { id: 4, subject: 'Biology', start_time: '2026-03-19T10:00:00Z', end_time: '2026-03-19T11:45:00Z', active_seconds: 6300, scroll_depth: 88, interaction_count: 52 },
+      ],
+    };
+  }
+
+  _questionPapers() {
+    return {
+      papers: [
+        {
+          id: 1,
+          title: 'Biology Mid-Term',
+          subject: 'Biology',
+          totalQuestions: 20,
+          totalMarks: 40,
+          duration: 30,
+          status: 'available',
+          score: null,
+          completedAt: null,
+        },
+        {
+          id: 2,
+          title: 'Physics Unit Test',
+          subject: 'Physics',
+          totalQuestions: 15,
+          totalMarks: 30,
+          duration: 20,
+          status: 'completed',
+          score: 24,
+          completedAt: '2026-03-18T15:45:00Z',
+        },
+        {
+          id: 3,
+          title: 'Math Weekly Test',
+          subject: 'Mathematics',
+          totalQuestions: 10,
+          totalMarks: 20,
+          duration: 15,
+          status: 'available',
+          score: null,
+          completedAt: null,
+        },
+        {
+          id: 4,
+          title: 'General Science Mock',
+          subject: 'Science',
+          totalQuestions: 25,
+          totalMarks: 50,
+          duration: 45,
+          status: 'upcoming',
+          score: null,
+          completedAt: null,
+        },
+      ],
+    };
+  }
+
+  _homework() {
+    return {
+      assignments: [
+        {
+          id: 1,
+          title: 'Photosynthesis Essay',
+          subject: 'Biology',
+          assignedBy: 'Suresh Sharma',
+          assignedDate: '2026-03-18',
+          dueDate: '2026-03-21',
+          status: 'pending',
+          marks: null,
+          totalMarks: 10,
+          type: 'written',
+        },
+        {
+          id: 2,
+          title: 'Newton\'s Laws MCQ Set',
+          subject: 'Physics',
+          assignedBy: 'Suresh Sharma',
+          assignedDate: '2026-03-19',
+          dueDate: '2026-03-22',
+          status: 'submitted',
+          marks: null,
+          totalMarks: 15,
+          type: 'mcq',
+        },
+        {
+          id: 3,
+          title: 'Algebra Practice Problems',
+          subject: 'Mathematics',
+          assignedBy: 'Rajesh Kumar',
+          assignedDate: '2026-03-17',
+          dueDate: '2026-03-19',
+          status: 'graded',
+          marks: 18,
+          totalMarks: 20,
+          type: 'written',
+        },
+        {
+          id: 4,
+          title: 'Science Project - Energy Sources',
+          subject: 'Chemistry',
+          assignedBy: 'Priya Singh',
+          assignedDate: '2026-03-10',
+          dueDate: '2026-03-17',
+          status: 'overdue',
+          marks: null,
+          totalMarks: 25,
+          type: 'project',
+        },
+        {
+          id: 5,
+          title: 'English Literature Analysis',
+          subject: 'English',
+          assignedBy: 'Meera Nair',
+          assignedDate: '2026-03-16',
+          dueDate: '2026-03-23',
+          status: 'submitted',
+          marks: null,
+          totalMarks: 20,
+          type: 'written',
+        },
+        {
+          id: 6,
+          title: 'Biology Cell Structure Diagram',
+          subject: 'Biology',
+          assignedBy: 'Suresh Sharma',
+          assignedDate: '2026-03-15',
+          dueDate: '2026-03-20',
+          status: 'graded',
+          marks: 8,
+          totalMarks: 10,
+          type: 'project',
+        },
+        {
+          id: 7,
+          title: 'Chemistry Balancing Equations',
+          subject: 'Chemistry',
+          assignedBy: 'Priya Singh',
+          assignedDate: '2026-03-19',
+          dueDate: '2026-03-24',
+          status: 'pending',
+          marks: null,
+          totalMarks: 15,
+          type: 'mcq',
+        },
+        {
+          id: 8,
+          title: 'Physics Wave Properties Assignment',
+          subject: 'Physics',
+          assignedBy: 'Suresh Sharma',
+          assignedDate: '2026-03-14',
+          dueDate: '2026-03-18',
+          status: 'overdue',
+          marks: null,
+          totalMarks: 12,
+          type: 'written',
+        },
+      ],
+    };
+  }
+
+  _reportCard() {
+    return {
+      term: 'Mid-Term 2025-26',
+      student: {
+        id: 1,
+        name: 'Arjun Kumar',
+        class: '10-A',
+        rollNumber: '15',
+      },
+      subjects: [
+        {
+          subjectName: 'Biology',
+          marksObtained: 78,
+          totalMarks: 100,
+          grade: 'A',
+          teacherRemark: 'Excellent understanding of concepts. Very attentive in class.',
+        },
+        {
+          subjectName: 'Physics',
+          marksObtained: 72,
+          totalMarks: 100,
+          grade: 'A',
+          teacherRemark: 'Good grasp of numerical problems. Needs more practice with derivations.',
+        },
+        {
+          subjectName: 'Mathematics',
+          marksObtained: 85,
+          totalMarks: 100,
+          grade: 'A+',
+          teacherRemark: 'Outstanding performance. Sharp analytical skills demonstrated.',
+        },
+        {
+          subjectName: 'Chemistry',
+          marksObtained: 75,
+          totalMarks: 100,
+          grade: 'A',
+          teacherRemark: 'Good conceptual clarity. Practice organic chemistry more.',
+        },
+        {
+          subjectName: 'English',
+          marksObtained: 82,
+          totalMarks: 100,
+          grade: 'A',
+          teacherRemark: 'Excellent writing skills and articulation. Keep it up!',
+        },
+      ],
+      summary: {
+        totalMarksObtained: 392,
+        totalMarks: 500,
+        overallPercentage: 78.4,
+        rank: 8,
+        attendancePercentage: 94,
+      },
+      remarks: {
+        classTeacherRemark: 'Arjun is a dedicated student with consistent performance. Shows good leadership qualities.',
+        principalRemark: 'Outstanding all-round development. Keep maintaining this standard of excellence.',
+      },
+      generatedDate: '2026-03-15',
+    };
+  }
+
+  _studentNotifications() {
+    return {
+      notifications: [
+        { id: 1, type: 'homework_due', title: 'Homework Due Tomorrow', message: 'Newton\'s Laws MCQ Set is due tomorrow', created_at: '2026-03-20T10:30:00Z', read: false },
+        { id: 2, type: 'test_reminder', title: 'Upcoming Test', message: 'Biology Mid-Term test on 2026-03-22. Start revision now!', created_at: '2026-03-20T09:00:00Z', read: false },
+        { id: 3, type: 'achievement', title: 'Achievement Unlocked', message: 'You earned "Perfect Score" badge!', created_at: '2026-03-19T16:45:00Z', read: true },
+        { id: 4, type: 'revision_reminder', title: 'Revision Time', message: 'Cell Biology revision is scheduled for today', created_at: '2026-03-20T08:00:00Z', read: false },
+        { id: 5, type: 'report_card', title: 'Report Card Available', message: 'Your mid-term report card is now available', created_at: '2026-03-15T14:00:00Z', read: true },
+      ],
+    };
+  }
+
+  _attendance() {
+    return {
+      monthlyAttendance: {
+        month: 'March 2026',
+        present: 18,
+        absent: 1,
+        late: 2,
+        totalDays: 21,
+      },
+      last30Days: [
+        { date: '2026-03-01', status: 'present' },
+        { date: '2026-03-02', status: 'present' },
+        { date: '2026-03-03', status: 'late' },
+        { date: '2026-03-04', status: 'present' },
+        { date: '2026-03-05', status: 'present' },
+        { date: '2026-03-06', status: 'present' },
+        { date: '2026-03-07', status: 'absent' },
+        { date: '2026-03-08', status: 'present' },
+        { date: '2026-03-09', status: 'present' },
+        { date: '2026-03-10', status: 'present' },
+        { date: '2026-03-11', status: 'present' },
+        { date: '2026-03-12', status: 'present' },
+        { date: '2026-03-13', status: 'late' },
+        { date: '2026-03-14', status: 'present' },
+        { date: '2026-03-15', status: 'present' },
+        { date: '2026-03-16', status: 'present' },
+        { date: '2026-03-17', status: 'present' },
+        { date: '2026-03-18', status: 'present' },
+        { date: '2026-03-19', status: 'present' },
+        { date: '2026-03-20', status: 'present' },
+      ],
+      attendancePercentage: 90.5,
     };
   }
 
@@ -217,6 +520,57 @@ class SmartStudyAPI {
     };
   }
 
+  _teacherHomework() {
+    return {
+      assignments: [
+        {
+          id: 1,
+          title: 'Photosynthesis Essay',
+          subject: 'Biology',
+          assignedDate: '2026-03-18',
+          dueDate: '2026-03-21',
+          totalAssigned: 45,
+          submitted: 32,
+          pending: 13,
+          graded: 28,
+        },
+        {
+          id: 2,
+          title: 'Newton\'s Laws MCQ Set',
+          subject: 'Physics',
+          assignedDate: '2026-03-19',
+          dueDate: '2026-03-22',
+          totalAssigned: 45,
+          submitted: 18,
+          pending: 27,
+          graded: 0,
+        },
+        {
+          id: 3,
+          title: 'Algebra Practice Problems',
+          subject: 'Mathematics',
+          assignedDate: '2026-03-17',
+          dueDate: '2026-03-19',
+          totalAssigned: 45,
+          submitted: 43,
+          pending: 2,
+          graded: 42,
+        },
+      ],
+    };
+  }
+
+  _teacherNotifications() {
+    return {
+      notifications: [
+        { id: 1, type: 'new_submission', title: 'New Homework Submission', message: 'Riya Sharma submitted "Photosynthesis Essay"', created_at: '2026-03-20T11:30:00Z', read: false },
+        { id: 2, type: 'mcq_review', title: 'MCQ Review Pending', message: '3 AI-generated MCQs are waiting for your review', created_at: '2026-03-20T09:15:00Z', read: false },
+        { id: 3, type: 'doubt_escalated', title: 'Doubt Escalated', message: 'Karan M. escalated a doubt about Krebs cycle', created_at: '2026-03-19T16:00:00Z', read: true },
+        { id: 4, type: 'new_submission', title: 'New Homework Submission', message: 'Arjun Kumar submitted "Biology Cell Structure Diagram"', created_at: '2026-03-19T14:45:00Z', read: true },
+      ],
+    };
+  }
+
   // Parent
   _parentDashboard() {
     return {
@@ -232,6 +586,19 @@ class SmartStudyAPI {
           { topic_name: 'Photosynthesis', scheduled_date: '2026-03-18', status: 'completed' },
           { topic_name: 'Cell Biology', scheduled_date: '2026-03-20', status: 'pending' },
         ],
+        homeworkSummary: {
+          pending: 3,
+          overdue: 1,
+          completed: 4,
+        },
+        todayStudyTime: 185,
+        weeklyStudyHours: 17.5,
+        reportCardAvailable: true,
+        attendanceSummary: {
+          present: 18,
+          absent: 1,
+          attendancePercentage: 90.5,
+        },
       }],
     };
   }
@@ -281,61 +648,61 @@ class SmartStudyAPI {
   // Planner
   _plannerCategories() {
     return { categories: [
-      { id: 1, name: 'Study', icon: 'ð', color: '#4F46E5', sort_order: 1 },
-      { id: 2, name: 'Homework', icon: 'ð', color: '#7C3AED', sort_order: 2 },
-      { id: 3, name: 'Revision', icon: 'ð', color: '#6366F1', sort_order: 3 },
-      { id: 4, name: 'MCQ Practice', icon: 'â', color: '#8B5CF6', sort_order: 4 },
-      { id: 5, name: 'Tuition', icon: 'ð¨âð«', color: '#A78BFA', sort_order: 5 },
-      { id: 6, name: 'Sports', icon: 'â½', color: '#10B981', sort_order: 6 },
-      { id: 7, name: 'Outdoor Play', icon: 'ð', color: '#34D399', sort_order: 7 },
-      { id: 8, name: 'Music', icon: 'ðµ', color: '#F59E0B', sort_order: 8 },
-      { id: 9, name: 'Art & Craft', icon: 'ð¨', color: '#F97316', sort_order: 9 },
-      { id: 10, name: 'Reading', icon: 'ð', color: '#3B82F6', sort_order: 10 },
-      { id: 11, name: 'Screen Time', icon: 'ð±', color: '#EF4444', sort_order: 11 },
-      { id: 12, name: 'Meal', icon: 'ð½ï¸', color: '#84CC16', sort_order: 12 },
-      { id: 13, name: 'Breakfast', icon: 'ð¥£', color: '#A3E635', sort_order: 13 },
-      { id: 14, name: 'Lunch', icon: 'ð±', color: '#65A30D', sort_order: 14 },
-      { id: 15, name: 'Dinner', icon: 'ð', color: '#4D7C0F', sort_order: 15 },
-      { id: 16, name: 'Sleep', icon: 'ð´', color: '#6B7280', sort_order: 17 },
-      { id: 17, name: 'Bath / Hygiene', icon: 'ð¿', color: '#06B6D4', sort_order: 19 },
-      { id: 18, name: 'Family Time', icon: 'ð¨âð©âð§âð¦', color: '#EC4899', sort_order: 20 },
-      { id: 19, name: 'Free Time', icon: 'ð®', color: '#F472B6', sort_order: 22 },
+      { id: 1, name: 'Study', icon: '📚', color: '#4F46E5', sort_order: 1 },
+      { id: 2, name: 'Homework', icon: '📝', color: '#7C3AED', sort_order: 2 },
+      { id: 3, name: 'Revision', icon: '🔄', color: '#6366F1', sort_order: 3 },
+      { id: 4, name: 'MCQ Practice', icon: '✅', color: '#8B5CF6', sort_order: 4 },
+      { id: 5, name: 'Tuition', icon: '👨‍🏫', color: '#A78BFA', sort_order: 5 },
+      { id: 6, name: 'Sports', icon: '⚽', color: '#10B981', sort_order: 6 },
+      { id: 7, name: 'Outdoor Play', icon: '🏃', color: '#34D399', sort_order: 7 },
+      { id: 8, name: 'Music', icon: '🎵', color: '#F59E0B', sort_order: 8 },
+      { id: 9, name: 'Art & Craft', icon: '🎨', color: '#F97316', sort_order: 9 },
+      { id: 10, name: 'Reading', icon: '📖', color: '#3B82F6', sort_order: 10 },
+      { id: 11, name: 'Screen Time', icon: '📱', color: '#EF4444', sort_order: 11 },
+      { id: 12, name: 'Meal', icon: '🍽️', color: '#84CC16', sort_order: 12 },
+      { id: 13, name: 'Breakfast', icon: '🥣', color: '#A3E635', sort_order: 13 },
+      { id: 14, name: 'Lunch', icon: '🍱', color: '#65A30D', sort_order: 14 },
+      { id: 15, name: 'Dinner', icon: '🍛', color: '#4D7C0F', sort_order: 15 },
+      { id: 16, name: 'Sleep', icon: '😴', color: '#6B7280', sort_order: 17 },
+      { id: 17, name: 'Bath / Hygiene', icon: '🚿', color: '#06B6D4', sort_order: 19 },
+      { id: 18, name: 'Family Time', icon: '👨‍👩‍👧‍👦', color: '#EC4899', sort_order: 20 },
+      { id: 19, name: 'Free Time', icon: '🎮', color: '#F472B6', sort_order: 22 },
     ]};
   }
 
   _plannerEntries() {
     return { entries: [
       // Monday
-      { id: 1, day_of_week: 1, start_time: '06:30:00', end_time: '07:00:00', title: 'Wake up & Bath', category_name: 'Bath / Hygiene', category_icon: 'ð¿', category_color: '#06B6D4' },
-      { id: 2, day_of_week: 1, start_time: '07:00:00', end_time: '07:30:00', title: null, category_name: 'Breakfast', category_icon: 'ð¥£', category_color: '#A3E635' },
-      { id: 3, day_of_week: 1, start_time: '08:00:00', end_time: '10:00:00', title: 'Math + Science', category_name: 'Study', category_icon: 'ð', category_color: '#4F46E5' },
-      { id: 4, day_of_week: 1, start_time: '10:00:00', end_time: '10:30:00', title: null, category_name: 'Outdoor Play', category_icon: 'ð', category_color: '#34D399' },
-      { id: 5, day_of_week: 1, start_time: '10:30:00', end_time: '11:30:00', title: 'Biology revision', category_name: 'Revision', category_icon: 'ð', category_color: '#6366F1' },
-      { id: 6, day_of_week: 1, start_time: '12:00:00', end_time: '12:30:00', title: null, category_name: 'Lunch', category_icon: 'ð±', category_color: '#65A30D' },
-      { id: 7, day_of_week: 1, start_time: '14:00:00', end_time: '15:00:00', title: null, category_name: 'Homework', category_icon: 'ð', category_color: '#7C3AED' },
-      { id: 8, day_of_week: 1, start_time: '16:00:00', end_time: '17:00:00', title: 'Cricket', category_name: 'Sports', category_icon: 'â½', category_color: '#10B981' },
-      { id: 9, day_of_week: 1, start_time: '17:30:00', end_time: '18:30:00', title: null, category_name: 'Tuition', category_icon: 'ð¨âð«', category_color: '#A78BFA' },
-      { id: 10, day_of_week: 1, start_time: '19:00:00', end_time: '19:30:00', title: null, category_name: 'Dinner', category_icon: 'ð', category_color: '#4D7C0F' },
-      { id: 11, day_of_week: 1, start_time: '19:30:00', end_time: '20:00:00', title: null, category_name: 'Screen Time', category_icon: 'ð±', category_color: '#EF4444' },
-      { id: 12, day_of_week: 1, start_time: '21:00:00', end_time: '06:30:00', title: null, category_name: 'Sleep', category_icon: 'ð´', category_color: '#6B7280' },
+      { id: 1, day_of_week: 1, start_time: '06:30:00', end_time: '07:00:00', title: 'Wake up & Bath', category_name: 'Bath / Hygiene', category_icon: '🚿', category_color: '#06B6D4' },
+      { id: 2, day_of_week: 1, start_time: '07:00:00', end_time: '07:30:00', title: null, category_name: 'Breakfast', category_icon: '🥣', category_color: '#A3E635' },
+      { id: 3, day_of_week: 1, start_time: '08:00:00', end_time: '10:00:00', title: 'Math + Science', category_name: 'Study', category_icon: '📚', category_color: '#4F46E5' },
+      { id: 4, day_of_week: 1, start_time: '10:00:00', end_time: '10:30:00', title: null, category_name: 'Outdoor Play', category_icon: '🏃', category_color: '#34D399' },
+      { id: 5, day_of_week: 1, start_time: '10:30:00', end_time: '11:30:00', title: 'Biology revision', category_name: 'Revision', category_icon: '🔄', category_color: '#6366F1' },
+      { id: 6, day_of_week: 1, start_time: '12:00:00', end_time: '12:30:00', title: null, category_name: 'Lunch', category_icon: '🍱', category_color: '#65A30D' },
+      { id: 7, day_of_week: 1, start_time: '14:00:00', end_time: '15:00:00', title: null, category_name: 'Homework', category_icon: '📝', category_color: '#7C3AED' },
+      { id: 8, day_of_week: 1, start_time: '16:00:00', end_time: '17:00:00', title: 'Cricket', category_name: 'Sports', category_icon: '⚽', category_color: '#10B981' },
+      { id: 9, day_of_week: 1, start_time: '17:30:00', end_time: '18:30:00', title: null, category_name: 'Tuition', category_icon: '👨‍🏫', category_color: '#A78BFA' },
+      { id: 10, day_of_week: 1, start_time: '19:00:00', end_time: '19:30:00', title: null, category_name: 'Dinner', category_icon: '🍛', category_color: '#4D7C0F' },
+      { id: 11, day_of_week: 1, start_time: '19:30:00', end_time: '20:00:00', title: null, category_name: 'Screen Time', category_icon: '📱', category_color: '#EF4444' },
+      { id: 12, day_of_week: 1, start_time: '21:00:00', end_time: '06:30:00', title: null, category_name: 'Sleep', category_icon: '😴', category_color: '#6B7280' },
       // Tuesday
-      { id: 13, day_of_week: 2, start_time: '06:30:00', end_time: '07:00:00', title: 'Wake up', category_name: 'Bath / Hygiene', category_icon: 'ð¿', category_color: '#06B6D4' },
-      { id: 14, day_of_week: 2, start_time: '07:00:00', end_time: '07:30:00', title: null, category_name: 'Breakfast', category_icon: 'ð¥£', category_color: '#A3E635' },
-      { id: 15, day_of_week: 2, start_time: '08:00:00', end_time: '10:00:00', title: 'English + Hindi', category_name: 'Study', category_icon: 'ð', category_color: '#4F46E5' },
-      { id: 16, day_of_week: 2, start_time: '10:30:00', end_time: '11:00:00', title: null, category_name: 'MCQ Practice', category_icon: 'â', category_color: '#8B5CF6' },
-      { id: 17, day_of_week: 2, start_time: '15:00:00', end_time: '16:00:00', title: 'Piano class', category_name: 'Music', category_icon: 'ðµ', category_color: '#F59E0B' },
-      { id: 18, day_of_week: 2, start_time: '17:00:00', end_time: '18:00:00', title: null, category_name: 'Sports', category_icon: 'â½', category_color: '#10B981' },
+      { id: 13, day_of_week: 2, start_time: '06:30:00', end_time: '07:00:00', title: 'Wake up', category_name: 'Bath / Hygiene', category_icon: '🚿', category_color: '#06B6D4' },
+      { id: 14, day_of_week: 2, start_time: '07:00:00', end_time: '07:30:00', title: null, category_name: 'Breakfast', category_icon: '🥣', category_color: '#A3E635' },
+      { id: 15, day_of_week: 2, start_time: '08:00:00', end_time: '10:00:00', title: 'English + Hindi', category_name: 'Study', category_icon: '📚', category_color: '#4F46E5' },
+      { id: 16, day_of_week: 2, start_time: '10:30:00', end_time: '11:00:00', title: null, category_name: 'MCQ Practice', category_icon: '✅', category_color: '#8B5CF6' },
+      { id: 17, day_of_week: 2, start_time: '15:00:00', end_time: '16:00:00', title: 'Piano class', category_name: 'Music', category_icon: '🎵', category_color: '#F59E0B' },
+      { id: 18, day_of_week: 2, start_time: '17:00:00', end_time: '18:00:00', title: null, category_name: 'Sports', category_icon: '⚽', category_color: '#10B981' },
       // Wed-Sun have some entries too
-      { id: 19, day_of_week: 3, start_time: '08:00:00', end_time: '10:00:00', title: 'Physics + Chemistry', category_name: 'Study', category_icon: 'ð', category_color: '#4F46E5' },
-      { id: 20, day_of_week: 3, start_time: '16:00:00', end_time: '17:00:00', title: null, category_name: 'Art & Craft', category_icon: 'ð¨', category_color: '#F97316' },
-      { id: 21, day_of_week: 4, start_time: '08:00:00', end_time: '10:00:00', title: 'Math + Biology', category_name: 'Study', category_icon: 'ð', category_color: '#4F46E5' },
-      { id: 22, day_of_week: 4, start_time: '15:00:00', end_time: '16:00:00', title: null, category_name: 'Tuition', category_icon: 'ð¨âð«', category_color: '#A78BFA' },
-      { id: 23, day_of_week: 5, start_time: '08:00:00', end_time: '09:30:00', title: 'Weekly test prep', category_name: 'Revision', category_icon: 'ð', category_color: '#6366F1' },
-      { id: 24, day_of_week: 5, start_time: '16:00:00', end_time: '17:30:00', title: 'Football', category_name: 'Sports', category_icon: 'â½', category_color: '#10B981' },
-      { id: 25, day_of_week: 6, start_time: '09:00:00', end_time: '10:00:00', title: null, category_name: 'Reading', category_icon: 'ð', category_color: '#3B82F6' },
-      { id: 26, day_of_week: 6, start_time: '16:00:00', end_time: '18:00:00', title: null, category_name: 'Family Time', category_icon: 'ð¨âð©âð§âð¦', category_color: '#EC4899' },
-      { id: 27, day_of_week: 0, start_time: '10:00:00', end_time: '11:00:00', title: 'Light revision', category_name: 'Revision', category_icon: 'ð', category_color: '#6366F1' },
-      { id: 28, day_of_week: 0, start_time: '15:00:00', end_time: '17:00:00', title: null, category_name: 'Free Time', category_icon: 'ð®', category_color: '#F472B6' },
+      { id: 19, day_of_week: 3, start_time: '08:00:00', end_time: '10:00:00', title: 'Physics + Chemistry', category_name: 'Study', category_icon: '📚', category_color: '#4F46E5' },
+      { id: 20, day_of_week: 3, start_time: '16:00:00', end_time: '17:00:00', title: null, category_name: 'Art & Craft', category_icon: '🎨', category_color: '#F97316' },
+      { id: 21, day_of_week: 4, start_time: '08:00:00', end_time: '10:00:00', title: 'Math + Biology', category_name: 'Study', category_icon: '📚', category_color: '#4F46E5' },
+      { id: 22, day_of_week: 4, start_time: '15:00:00', end_time: '16:00:00', title: null, category_name: 'Tuition', category_icon: '👨‍🏫', category_color: '#A78BFA' },
+      { id: 23, day_of_week: 5, start_time: '08:00:00', end_time: '09:30:00', title: 'Weekly test prep', category_name: 'Revision', category_icon: '🔄', category_color: '#6366F1' },
+      { id: 24, day_of_week: 5, start_time: '16:00:00', end_time: '17:30:00', title: 'Football', category_name: 'Sports', category_icon: '⚽', category_color: '#10B981' },
+      { id: 25, day_of_week: 6, start_time: '09:00:00', end_time: '10:00:00', title: null, category_name: 'Reading', category_icon: '📖', category_color: '#3B82F6' },
+      { id: 26, day_of_week: 6, start_time: '16:00:00', end_time: '18:00:00', title: null, category_name: 'Family Time', category_icon: '👨‍👩‍👧‍👦', category_color: '#EC4899' },
+      { id: 27, day_of_week: 0, start_time: '10:00:00', end_time: '11:00:00', title: 'Light revision', category_name: 'Revision', category_icon: '🔄', category_color: '#6366F1' },
+      { id: 28, day_of_week: 0, start_time: '15:00:00', end_time: '17:00:00', title: null, category_name: 'Free Time', category_icon: '🎮', category_color: '#F472B6' },
     ]};
   }
 
@@ -350,9 +717,9 @@ class SmartStudyAPI {
 
   _mySchedule() {
     return { today: [
-      { id: 3, start_time: '08:00:00', end_time: '10:00:00', title: 'Math + Science', category_name: 'Study', icon: 'ð', color: '#4F46E5' },
-      { id: 7, start_time: '14:00:00', end_time: '15:00:00', title: null, category_name: 'Homework', icon: 'ð', color: '#7C3AED' },
-      { id: 8, start_time: '16:00:00', end_time: '17:00:00', title: 'Cricket', category_name: 'Sports', icon: 'â½', color: '#10B981' },
+      { id: 3, start_time: '08:00:00', end_time: '10:00:00', title: 'Math + Science', category_name: 'Study', icon: '📚', color: '#4F46E5' },
+      { id: 7, start_time: '14:00:00', end_time: '15:00:00', title: null, category_name: 'Homework', icon: '📝', color: '#7C3AED' },
+      { id: 8, start_time: '16:00:00', end_time: '17:00:00', title: 'Cricket', category_name: 'Sports', icon: '⚽', color: '#10B981' },
     ]};
   }
 
@@ -364,6 +731,9 @@ class SmartStudyAPI {
       mcq: { approved: 1240, pendingReview: 48 },
       sip: { school_avg_sip: 64.7, at_risk_count: 38 },
       engagement: { active_students: 312 },
+      homework: { total_assigned: 284, completion_rate: 78.5 },
+      notifications: { total_sent: 1240, unread: 145 },
+      engagementMetrics: { avg_daily_study_time: 265.4, total_sessions: 3240 },
       ai: { total_requests: 8540, total_cost: '42.30', avg_latency_ms: 1200, failures: 12 },
       dailyActiveStudents: [
         { date: '2026-03-14', active_students: 285 },
@@ -419,6 +789,17 @@ class SmartStudyAPI {
       { id: 4, name: 'Newton\'s Laws', chapter_number: 1, board: 'CBSE', difficulty_level: 'Medium' },
       { id: 5, name: 'Electromagnetic Induction', chapter_number: 5, board: 'CBSE', difficulty_level: 'Hard' },
     ]};
+  }
+
+  _adminNotifications() {
+    return {
+      notifications: [
+        { id: 1, type: 'system_alert', title: 'System Performance', message: 'Server CPU usage is 72%. Monitor closely.', created_at: '2026-03-20T10:45:00Z', read: false },
+        { id: 2, type: 'new_registration', title: 'New Registrations', message: '12 new students registered in the last 24 hours', created_at: '2026-03-20T08:00:00Z', read: false },
+        { id: 3, type: 'system_alert', title: 'Database Backup', message: 'Scheduled backup completed successfully', created_at: '2026-03-19T02:30:00Z', read: true },
+        { id: 4, type: 'new_registration', title: 'New Teacher Registration', message: 'New teacher registered: Meera Nair', created_at: '2026-03-18T15:20:00Z', read: true },
+      ],
+    };
   }
 
   // Principal
@@ -519,6 +900,12 @@ class SmartStudyAPI {
   async getDoubts() { return this.request('GET', '/student/doubts'); }
   async getGamification() { return this.request('GET', '/student/gamification'); }
   async getStudyPlans() { return this.request('GET', '/student/study-plans'); }
+  async getEngagementHistory() { return this.request('GET', '/student/engagement/history'); }
+  async getQuestionPapers() { return this.request('GET', '/student/question-papers'); }
+  async getHomework() { return this.request('GET', '/student/homework'); }
+  async getReportCard() { return this.request('GET', '/student/report-card'); }
+  async getStudentNotifications() { return this.request('GET', '/student/notifications'); }
+  async getAttendance() { return this.request('GET', '/student/attendance'); }
   async teacherDashboard() { return this.request('GET', '/teacher/dashboard'); }
   async uploadContent(d) { return { id: 99 }; }
   async getContent(p) { return this.request('GET', '/teacher/content'); }
@@ -527,6 +914,8 @@ class SmartStudyAPI {
   async getClassAnalytics(c, s) { return this.request('GET', '/teacher/analytics/class'); }
   async getEscalatedDoubts() { return this.request('GET', '/teacher/doubts'); }
   async respondToDoubt(id, r) { return { status: 'responded' }; }
+  async getTeacherHomework() { return this.request('GET', '/teacher/homework'); }
+  async getTeacherNotifications() { return this.request('GET', '/teacher/notifications'); }
   async parentDashboard() { return this.request('GET', '/parent/dashboard'); }
   async getChildSip(s) { return this.request('GET', `/parent/child/${s}/sip`); }
   async getChildEngagement(s) { return { sessions: [] }; }
@@ -541,6 +930,7 @@ class SmartStudyAPI {
   async getTopics(s) { return this.request('GET', '/admin/topics'); }
   async createTopic(d) { return { id: 99 }; }
   async broadcastNotification(d) { return { status: 'queued' }; }
+  async getAdminNotifications() { return this.request('GET', '/admin/notifications'); }
   async principalOverview() { return this.request('GET', '/principal/overview'); }
   async teacherEffectiveness() { return this.request('GET', '/principal/teacher-effectiveness'); }
   async classComparison() { return this.request('GET', '/principal/class-comparison'); }
