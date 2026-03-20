@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SmartStudy — Student Dashboard</title>
-  
-  
+
+
   <link rel="stylesheet" href="css/style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -18,8 +18,13 @@
       <nav>
         <a href="#" class="active" data-section="dashboard">📊 Dashboard</a>
         <a href="#" data-section="practice">📝 MCQ Practice</a>
+        <a href="#" data-section="papers">📄 Question Papers</a>
         <a href="#" data-section="sip">🎯 My SIP Scores</a>
         <a href="#" data-section="revisions">🔄 Revisions</a>
+        <a href="#" data-section="homework">📋 Homework</a>
+        <a href="#" data-section="studytime">⏱️ Study Time</a>
+        <a href="#" data-section="reportcard">📊 Report Card</a>
+        <a href="#" data-section="notifications">🔔 Notifications</a>
         <a href="#" data-section="doubts">❓ Ask a Doubt</a>
         <a href="#" data-section="plans">📋 Study Plans</a>
         <a href="#" data-section="achievements">🏆 Achievements</a>
@@ -51,6 +56,16 @@
             <div class="label">Total Points</div>
             <div class="value" id="totalPoints">0</div>
             <div class="change" id="levelBadge">Level 1</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Homework Due Today</div>
+            <div class="value" id="homeworkDueToday">0</div>
+            <div class="change">assignments</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Today's Study Time</div>
+            <div class="value" id="todayStudyTime">0h</div>
+            <div class="change">focused learning</div>
           </div>
           <div class="stat-card">
             <div class="label">Pending Revisions</div>
@@ -94,6 +109,20 @@
         <div id="mcqContainer"></div>
       </section>
 
+      <!-- Question Papers Section -->
+      <section id="section-papers" style="display:none">
+        <div class="page-header"><h1>Question Papers</h1></div>
+        <div class="filter-bar">
+          <select id="paperFilter" onchange="filterPapers(this.value)">
+            <option value="">All Papers</option>
+            <option value="available">Available</option>
+            <option value="completed">Completed</option>
+            <option value="upcoming">Upcoming</option>
+          </select>
+        </div>
+        <div id="papersContainer" class="loading"><div class="spinner"></div>Loading papers...</div>
+      </section>
+
       <!-- SIP Scores Section -->
       <section id="section-sip" style="display:none">
         <div class="page-header"><h1>Subject Intelligence Profile</h1></div>
@@ -104,6 +133,142 @@
       <section id="section-revisions" style="display:none">
         <div class="page-header"><h1>Spaced Repetition Schedule</h1></div>
         <div id="revisionsContainer" class="loading"><div class="spinner"></div>Loading...</div>
+      </section>
+
+      <!-- Homework Section -->
+      <section id="section-homework" style="display:none">
+        <div class="page-header"><h1>My Homework</h1></div>
+        <div class="filter-bar">
+          <select id="homeworkFilter" onchange="filterHomework(this.value)">
+            <option value="">All</option>
+            <option value="pending">Pending</option>
+            <option value="submitted">Submitted</option>
+            <option value="graded">Graded</option>
+            <option value="overdue">Overdue</option>
+          </select>
+        </div>
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Subject</th>
+                <th>Assigned By</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Marks</th>
+              </tr>
+            </thead>
+            <tbody id="homeworkList"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Study Time Section -->
+      <section id="section-studytime" style="display:none">
+        <div class="page-header"><h1>Study Time Analytics</h1></div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="label">Today's Study Time</div>
+            <div class="value" id="studyTimeToday">0h 0m</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Weekly Average</div>
+            <div class="value" id="studyTimeAvg">0h</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Total This Week</div>
+            <div class="value" id="studyTimeTotal">0h</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Focus Score</div>
+            <div class="value" id="focusScore">--</div>
+          </div>
+        </div>
+
+        <!-- Daily Study Time Table -->
+        <div class="card">
+          <div class="card-header"><h3>Last 7 Days</h3></div>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Study Time</th>
+                <th>Sessions</th>
+                <th>Devices Used</th>
+              </tr>
+            </thead>
+            <tbody id="dailyStudyList"></tbody>
+          </table>
+        </div>
+
+        <!-- Subject-wise Study Time -->
+        <div class="card">
+          <div class="card-header"><h3>Subject-wise Study Time</h3></div>
+          <table>
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Study Time</th>
+                <th>Sessions</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody id="subjectStudyList"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Report Card Section -->
+      <section id="section-reportcard" style="display:none">
+        <div class="page-header"><h1>Report Card</h1></div>
+
+        <div class="card">
+          <div class="card-header"><h3>Overall Performance</h3></div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="label">Overall Percentage</div>
+              <div class="value" id="overallPercentage">--</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Class Rank</div>
+              <div class="value" id="classRank">--</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Attendance</div>
+              <div class="value" id="attendance">--</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subject Marks -->
+        <div class="card">
+          <div class="card-header"><h3>Subject Marks & Grades</h3></div>
+          <table>
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Marks</th>
+                <th>Grade</th>
+                <th>Remark</th>
+              </tr>
+            </thead>
+            <tbody id="subjectMarks"></tbody>
+          </table>
+        </div>
+
+        <!-- Remarks -->
+        <div class="card">
+          <div class="card-header"><h3>Remarks</h3></div>
+          <div id="remarksContainer"></div>
+        </div>
+      </section>
+
+      <!-- Notifications Section -->
+      <section id="section-notifications" style="display:none">
+        <div class="page-header"><h1>Notifications</h1></div>
+        <div id="notificationsContainer" class="loading"><div class="spinner"></div>Loading notifications...</div>
       </section>
 
       <!-- Doubts Section -->
@@ -151,6 +316,13 @@
         document.getElementById(`section-${section}`).style.display = 'block';
         document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
         document.querySelector(`.sidebar nav a[data-section="${section}"]`)?.classList.add('active');
+
+        // Load section-specific data
+        if (section === 'papers') loadQuestionPapers();
+        if (section === 'homework') loadHomework();
+        if (section === 'studytime') loadStudyTime();
+        if (section === 'reportcard') loadReportCard();
+        if (section === 'notifications') loadNotifications();
       });
     });
 
@@ -200,6 +372,31 @@
             <td>${a.completed ? '<span class="sip-badge sip-excellent">Completed</span>' : '<span class="sip-badge sip-average">In Progress</span>'}</td>
           </tr>
         `).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--text-secondary)">No recent activity</td></tr>';
+
+        // Load homework due today count
+        try {
+          const homework = await api.getHomework();
+          const today = new Date().toISOString().split('T')[0];
+          const dueToday = homework.filter(h => h.dueDate && h.dueDate.split('T')[0] === today && h.status !== 'graded').length;
+          document.getElementById('homeworkDueToday').textContent = dueToday;
+        } catch (err) {
+          console.log('Could not load homework count');
+        }
+
+        // Load study time for today
+        try {
+          const engHistory = await api.getEngagementHistory();
+          if (engHistory.sessions && engHistory.sessions.length > 0) {
+            const today = new Date().toISOString().split('T')[0];
+            const todaySessions = engHistory.sessions.filter(s => s.date && s.date.split('T')[0] === today);
+            const totalMinutes = todaySessions.reduce((sum, s) => sum + (s.duration || 0), 0);
+            const hours = Math.floor(totalMinutes / 60);
+            const mins = totalMinutes % 60;
+            document.getElementById('todayStudyTime').textContent = `${hours}h ${mins}m`;
+          }
+        } catch (err) {
+          console.log('Could not load study time');
+        }
       } catch (err) {
         console.error('Dashboard load failed:', err);
       }
@@ -212,6 +409,246 @@
         loadDashboard();
       } catch (err) {
         alert(err?.detail || 'Failed to complete revision');
+      }
+    }
+
+    // ---- Question Papers ----
+    async function loadQuestionPapers() {
+      try {
+        const papers = await api.getQuestionPapers();
+        const container = document.getElementById('papersContainer');
+
+        if (!papers || papers.length === 0) {
+          container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary)">No question papers available</div>';
+          return;
+        }
+
+        container.innerHTML = papers.map(paper => `
+          <div class="card" style="margin-bottom:15px;">
+            <div style="display:flex;justify-content:space-between;align-items:start;">
+              <div>
+                <h4 style="margin:0 0 8px 0">${paper.title}</h4>
+                <p style="color:var(--text-secondary);font-size:14px;margin:0;">Subject: ${paper.subject}</p>
+                <div style="margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:14px;">
+                  <div><strong>${paper.totalQuestions}</strong> Questions</div>
+                  <div><strong>${paper.totalMarks}</strong> Marks</div>
+                  <div><strong>${paper.duration}</strong> mins</div>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <span class="sip-badge ${getStatusBadgeClass(paper.status)}">${paper.status}</span>
+                ${paper.status === 'completed' ? `<div style="margin-top:8px;font-weight:bold;color:var(--primary);">Score: ${paper.score}/${paper.totalMarks}</div>` : ''}
+              </div>
+            </div>
+            ${paper.status === 'available' ? `<button class="btn btn-primary" style="margin-top:15px;" onclick="startPaper(${paper.id})">Start Paper</button>` : ''}
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error('Failed to load papers:', err);
+        document.getElementById('papersContainer').innerHTML = '<div style="color:var(--text-danger);padding:20px;">Failed to load question papers</div>';
+      }
+    }
+
+    function getStatusBadgeClass(status) {
+      const map = { 'available': 'sip-excellent', 'completed': 'sip-excellent', 'upcoming': 'sip-average' };
+      return map[status] || 'sip-average';
+    }
+
+    function filterPapers(filter) {
+      // Implementation for filtering papers
+      loadQuestionPapers();
+    }
+
+    function startPaper(paperId) {
+      alert(`Starting paper ${paperId}. Feature coming soon!`);
+    }
+
+    // ---- Homework ----
+    async function loadHomework() {
+      try {
+        const homework = await api.getHomework();
+        const container = document.getElementById('homeworkList');
+
+        if (!homework || homework.length === 0) {
+          container.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-secondary)">No homework assigned</td></tr>';
+          return;
+        }
+
+        container.innerHTML = homework.map(hw => `
+          <tr>
+            <td><strong>${hw.title}</strong></td>
+            <td>${hw.subject}</td>
+            <td>${hw.assignedBy}</td>
+            <td>${new Date(hw.dueDate).toLocaleDateString()}</td>
+            <td><span class="sip-badge ${getHomeworkStatusClass(hw.status)}">${hw.status}</span></td>
+            <td>${hw.status === 'graded' ? `${hw.marks}/${hw.totalMarks}` : '--'}</td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error('Failed to load homework:', err);
+        document.getElementById('homeworkList').innerHTML = '<tr><td colspan="6" style="color:var(--text-danger);padding:20px;">Failed to load homework</td></tr>';
+      }
+    }
+
+    function getHomeworkStatusClass(status) {
+      const map = {
+        'pending': 'sip-average',
+        'submitted': 'sip-good',
+        'graded': 'sip-excellent',
+        'overdue': 'sip-poor'
+      };
+      return map[status] || 'sip-average';
+    }
+
+    function filterHomework(filter) {
+      loadHomework();
+    }
+
+    // ---- Study Time ----
+    async function loadStudyTime() {
+      try {
+        const engHistory = await api.getEngagementHistory();
+
+        // Calculate stats
+        let totalMinutesToday = 0;
+        let totalMinutesWeek = 0;
+        const subjectStats = {};
+
+        if (engHistory.dailyStats) {
+          const today = new Date().toISOString().split('T')[0];
+          engHistory.dailyStats.forEach(stat => {
+            if (stat.date && stat.date.split('T')[0] === today) {
+              totalMinutesToday = stat.totalMinutes || 0;
+            }
+            totalMinutesWeek += stat.totalMinutes || 0;
+          });
+        }
+
+        // Display stats
+        const todayHours = Math.floor(totalMinutesToday / 60);
+        const todayMins = totalMinutesToday % 60;
+        document.getElementById('studyTimeToday').textContent = `${todayHours}h ${todayMins}m`;
+        document.getElementById('studyTimeAvg').textContent = `${Math.floor(totalMinutesWeek / 7 / 60)}h`;
+        document.getElementById('studyTimeTotal').textContent = `${Math.floor(totalMinutesWeek / 60)}h`;
+        document.getElementById('focusScore').textContent = engHistory.focusScore ? `${engHistory.focusScore}%` : '--';
+
+        // Daily study table
+        const dailyList = document.getElementById('dailyStudyList');
+        if (engHistory.dailyStats && engHistory.dailyStats.length > 0) {
+          dailyList.innerHTML = engHistory.dailyStats.slice(-7).map(stat => {
+            const hours = Math.floor((stat.totalMinutes || 0) / 60);
+            const mins = (stat.totalMinutes || 0) % 60;
+            const devices = (stat.devices || []).join(', ') || '--';
+            return `
+              <tr>
+                <td>${new Date(stat.date).toLocaleDateString()}</td>
+                <td>${hours}h ${mins}m</td>
+                <td>${stat.sessions || 0}</td>
+                <td>${devices}</td>
+              </tr>
+            `;
+          }).join('');
+        } else {
+          dailyList.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-secondary)">No data available</td></tr>';
+        }
+
+        // Subject-wise study time
+        const subjectList = document.getElementById('subjectStudyList');
+        if (engHistory.deviceBreakdown && Array.isArray(engHistory.deviceBreakdown)) {
+          subjectList.innerHTML = engHistory.deviceBreakdown.map(dev => `
+            <tr>
+              <td>${dev.device || 'Unknown'}</td>
+              <td>${Math.floor((dev.minutes || 0) / 60)}h ${(dev.minutes || 0) % 60}m</td>
+              <td>${dev.sessions || 0}</td>
+              <td>${((dev.minutes || 0) / totalMinutesWeek * 100).toFixed(1)}%</td>
+            </tr>
+          `).join('');
+        } else {
+          subjectList.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-secondary)">No data available</td></tr>';
+        }
+      } catch (err) {
+        console.error('Failed to load study time:', err);
+        document.getElementById('dailyStudyList').innerHTML = '<tr><td colspan="4" style="color:var(--text-danger);padding:20px;">Failed to load study time data</td></tr>';
+      }
+    }
+
+    // ---- Report Card ----
+    async function loadReportCard() {
+      try {
+        const reportCard = await api.getReportCard();
+
+        if (!reportCard) {
+          document.getElementById('subjectMarks').innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-secondary)">No report card data available</td></tr>';
+          return;
+        }
+
+        // Overall stats
+        document.getElementById('overallPercentage').textContent = `${reportCard.overallPercentage}%`;
+        document.getElementById('classRank').textContent = reportCard.rank || '--';
+        document.getElementById('attendance').textContent = `${reportCard.attendance}%`;
+
+        // Subject marks
+        const subjectsHtml = (reportCard.subjects || []).map(subject => `
+          <tr>
+            <td><strong>${subject.name}</strong></td>
+            <td>${subject.marks}/${subject.totalMarks}</td>
+            <td><span class="sip-badge ${getGradeBadgeClass(subject.grade)}">${subject.grade}</span></td>
+            <td>${subject.remark || '--'}</td>
+          </tr>
+        `).join('');
+        document.getElementById('subjectMarks').innerHTML = subjectsHtml || '<tr><td colspan="4" style="text-align:center;">No subject data</td></tr>';
+
+        // Remarks
+        const remarksHtml = `
+          <div style="margin-bottom:15px;">
+            <h4 style="margin:0 0 8px 0;">Principal's Remark</h4>
+            <p style="margin:0;color:var(--text-secondary);">${reportCard.principalRemark || 'No remark'}</p>
+          </div>
+          <div>
+            <h4 style="margin:0 0 8px 0;">Class Teacher's Remark</h4>
+            <p style="margin:0;color:var(--text-secondary);">${reportCard.classTeacherRemark || 'No remark'}</p>
+          </div>
+        `;
+        document.getElementById('remarksContainer').innerHTML = remarksHtml;
+      } catch (err) {
+        console.error('Failed to load report card:', err);
+        document.getElementById('subjectMarks').innerHTML = '<tr><td colspan="4" style="color:var(--text-danger);padding:20px;">Failed to load report card</td></tr>';
+      }
+    }
+
+    function getGradeBadgeClass(grade) {
+      const map = { 'A': 'sip-excellent', 'B': 'sip-good', 'C': 'sip-average', 'D': 'sip-poor' };
+      return map[grade] || 'sip-average';
+    }
+
+    // ---- Notifications ----
+    async function loadNotifications() {
+      try {
+        const notifications = await api.getStudentNotifications();
+        const container = document.getElementById('notificationsContainer');
+
+        if (!notifications || notifications.length === 0) {
+          container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary)">No notifications</div>';
+          return;
+        }
+
+        container.innerHTML = notifications.map((notif, idx) => `
+          <div class="card" style="margin-bottom:10px;border-left:4px solid ${notif.read ? 'var(--border-color)' : 'var(--primary)'};">
+            <div style="display:flex;justify-content:space-between;align-items:start;">
+              <div style="flex:1;">
+                <h4 style="margin:0 0 5px 0;font-weight:${notif.read ? '400' : '600'}">${notif.title}</h4>
+                <p style="margin:0 0 8px 0;color:var(--text-secondary);font-size:14px;">${notif.message}</p>
+                <p style="margin:0;font-size:12px;color:#999;">${new Date(notif.time).toLocaleString()}</p>
+              </div>
+              <div style="text-align:right;">
+                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${notif.read ? 'transparent' : 'var(--primary)'};" title="${notif.read ? 'Read' : 'Unread'}"></span>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error('Failed to load notifications:', err);
+        document.getElementById('notificationsContainer').innerHTML = '<div style="color:var(--text-danger);padding:20px;">Failed to load notifications</div>';
       }
     }
 
