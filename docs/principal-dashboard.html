@@ -18,6 +18,7 @@
         <a href="#" class="active" data-section="overview">📊 School Overview</a>
         <a href="#" data-section="class-comparison">🏫 Class Comparison</a>
         <a href="#" data-section="teachers">👩‍🏫 Teacher Effectiveness</a>
+        <a href="#" data-section="report-cards">📊 Report Card Analytics</a>
         <a href="#" data-section="monthly">📅 Monthly Trends</a>
       </nav>
       <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
@@ -37,6 +38,13 @@
           <div class="stat-card"><div class="label">Total Teachers</div><div class="value" id="totalTeachers">--</div></div>
           <div class="stat-card"><div class="label">Avg SIP (School)</div><div class="value" id="avgSip">--</div></div>
           <div class="stat-card"><div class="label">Median SIP</div><div class="value" id="medianSip">--</div></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card"><div class="label">Homework Completion</div><div class="value" id="homeworkCompRate">--</div></div>
+          <div class="stat-card"><div class="label">Avg Daily Study Min</div><div class="value" id="avgStudyMin">--</div></div>
+          <div class="stat-card"><div class="label">Total Sessions/Week</div><div class="value" id="sessionsPerWeek">--</div></div>
+          <div class="stat-card"><div class="label">Avg Focus Score</div><div class="value" id="focusScore">--</div></div>
         </div>
 
         <!-- SIP Distribution -->
@@ -130,6 +138,48 @@
         </div>
       </section>
 
+      <!-- Report Card Analytics -->
+      <section id="section-report-cards" style="display:none">
+        <div class="page-header"><h1>Report Card Analytics</h1></div>
+
+        <!-- Grade Distribution -->
+        <div class="card">
+          <div class="card-header"><h3>School-wide Grade Distribution</h3></div>
+          <div class="stats-grid" id="gradeDistribution">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Subject Pass/Fail -->
+        <div class="card">
+          <div class="card-header"><h3>Subject-wise Pass/Fail Rates</h3></div>
+          <table>
+            <thead><tr><th>Subject</th><th>Pass Rate</th><th>Fail Rate</th><th>Students</th></tr></thead>
+            <tbody id="subjectPassFailList"></tbody>
+          </table>
+        </div>
+
+        <!-- Top Rank Holders -->
+        <div class="card">
+          <div class="card-header"><h3>Top 5 Rank Holders</h3></div>
+          <table>
+            <thead><tr><th>Rank</th><th>Student ID</th><th>Average %</th></tr></thead>
+            <tbody id="topRankList"></tbody>
+          </table>
+        </div>
+
+        <!-- School Stats -->
+        <div class="card">
+          <div class="card-header"><h3>School-wide Statistics</h3></div>
+          <div class="stats-grid">
+            <div class="stat-card"><div class="label">Average School %</div><div class="value" id="avgSchoolPercent">--</div></div>
+            <div class="stat-card"><div class="label">Highest Score</div><div class="value" id="highestScore">--</div></div>
+            <div class="stat-card"><div class="label">Lowest Score</div><div class="value" id="lowestScore">--</div></div>
+            <div class="stat-card"><div class="label">Overall Pass %</div><div class="value" id="overallPassPercent">--</div></div>
+          </div>
+        </div>
+      </section>
+
       <!-- Monthly Trends -->
       <section id="section-monthly" style="display:none">
         <div class="page-header"><h1>Monthly Trends (6 Months)</h1></div>
@@ -176,6 +226,7 @@
 
         if (section === 'class-comparison') loadClassComparison();
         if (section === 'teachers') loadTeachers();
+        if (section === 'report-cards') loadReportCards();
         if (section === 'monthly') loadMonthly();
       });
     });
@@ -273,6 +324,15 @@
           </tr>
         `).join('') || '<tr><td colspan="4">No top performers data</td></tr>';
 
+        // Homework completion and engagement metrics
+        const homework = data.homework || {};
+        document.getElementById('homeworkCompRate').textContent = homework.completionRate ? `${homework.completionRate}%` : '--';
+
+        const metrics = data.engagementMetrics || {};
+        document.getElementById('avgStudyMin').textContent = metrics.avgDailyStudyMin || '--';
+        document.getElementById('sessionsPerWeek').textContent = metrics.totalSessionsWeek || '--';
+        document.getElementById('focusScore').textContent = metrics.avgFocusScore ? `${metrics.avgFocusScore}%` : '--';
+
       } catch (err) { console.error('Failed to load overview', err); }
     }
 
@@ -302,6 +362,79 @@
             <td>${t.mcqs_created}</td>
           </tr>
         `).join('') || '<tr><td colspan="3">No teacher data</td></tr>';
+      } catch (err) { console.error(err); }
+    }
+
+    // ---- Report Card Analytics ----
+    async function loadReportCards() {
+      try {
+        // Mock grade distribution data
+        const gradeData = [
+          { grade: 'A+', students: 12, percentage: 8 },
+          { grade: 'A', students: 28, percentage: 19 },
+          { grade: 'B+', students: 45, percentage: 30 },
+          { grade: 'B', students: 35, percentage: 24 },
+          { grade: 'C+', students: 18, percentage: 12 },
+          { grade: 'C', students: 8, percentage: 5 },
+          { grade: 'Below C', students: 2, percentage: 2 }
+        ];
+
+        document.getElementById('gradeDistribution').innerHTML = gradeData.map(g => `
+          <div class="stat-card">
+            <div class="label">${g.grade}</div>
+            <div class="value">${g.students}</div>
+            <div class="change">${g.percentage}%</div>
+          </div>
+        `).join('');
+
+        // Mock subject pass/fail rates
+        const subjectData = [
+          { subject: 'Mathematics', passRate: 88, failRate: 12, students: 150 },
+          { subject: 'English', passRate: 92, failRate: 8, students: 150 },
+          { subject: 'Science', passRate: 85, failRate: 15, students: 150 },
+          { subject: 'Social Studies', passRate: 90, failRate: 10, students: 150 },
+          { subject: 'Hindi', passRate: 95, failRate: 5, students: 150 }
+        ];
+
+        document.getElementById('subjectPassFailList').innerHTML = subjectData.map(s => `
+          <tr>
+            <td>${s.subject}</td>
+            <td><span style="color: var(--success)">${s.passRate}%</span></td>
+            <td><span style="color: var(--danger)">${s.failRate}%</span></td>
+            <td>${s.students}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="4">No data</td></tr>';
+
+        // Mock top 5 rank holders
+        const topStudents = [
+          { rank: 1, studentId: 'STU-2401', average: 96.5 },
+          { rank: 2, studentId: 'STU-2412', average: 95.2 },
+          { rank: 3, studentId: 'STU-2405', average: 94.8 },
+          { rank: 4, studentId: 'STU-2418', average: 93.1 },
+          { rank: 5, studentId: 'STU-2423', average: 92.7 }
+        ];
+
+        document.getElementById('topRankList').innerHTML = topStudents.map(s => `
+          <tr>
+            <td><strong>${s.rank}</strong></td>
+            <td>${s.studentId}</td>
+            <td>${s.average}%</td>
+          </tr>
+        `).join('') || '<tr><td colspan="3">No data</td></tr>';
+
+        // School-wide statistics
+        const totalStudents = 148;
+        const passCount = 135;
+        const avgPercent = 87.3;
+        const highestScore = 96.5;
+        const lowestScore = 42.0;
+        const passPercent = ((passCount / totalStudents) * 100).toFixed(1);
+
+        document.getElementById('avgSchoolPercent').textContent = avgPercent + '%';
+        document.getElementById('highestScore').textContent = highestScore + '%';
+        document.getElementById('lowestScore').textContent = lowestScore + '%';
+        document.getElementById('overallPassPercent').textContent = passPercent + '%';
+
       } catch (err) { console.error(err); }
     }
 
