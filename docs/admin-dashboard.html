@@ -18,7 +18,9 @@
         <a href="#" class="active" data-section="dashboard">📊 Dashboard</a>
         <a href="#" data-section="students">👨‍🎓 Students</a>
         <a href="#" data-section="topics">📖 Curriculum</a>
+        <a href="#" data-section="homework">📝 Homework Overview</a>
         <a href="#" data-section="ai-usage">🤖 AI Usage</a>
+        <a href="#" data-section="notifications">🔔 Notifications</a>
         <a href="#" data-section="system">⚙️ System</a>
         <a href="#" data-section="broadcast">📢 Broadcast</a>
       </nav>
@@ -45,6 +47,13 @@
           <div class="stat-card"><div class="label">Approved MCQs</div><div class="value" id="approvedMcqs">--</div></div>
           <div class="stat-card"><div class="label">Pending Reviews</div><div class="value" id="pendingReviews">--</div></div>
           <div class="stat-card"><div class="label">Weekly Active</div><div class="value" id="weeklyActive">--</div><div class="change">students this week</div></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card"><div class="label">Homework Assigned</div><div class="value" id="homeworkAssigned">--</div></div>
+          <div class="stat-card"><div class="label">Completion Rate</div><div class="value" id="homeworkCompletion">--</div></div>
+          <div class="stat-card"><div class="label">Overdue Count</div><div class="value" id="homeworkOverdue">--</div></div>
+          <div class="stat-card"><div class="label">Avg Daily Study</div><div class="value" id="avgDailyStudy">--</div><div class="change">minutes</div></div>
         </div>
 
         <div class="card">
@@ -112,10 +121,36 @@
         </div>
       </section>
 
+      <!-- Homework Overview -->
+      <section id="section-homework" style="display:none">
+        <div class="page-header"><h1>Homework Overview</h1></div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="label">Total Assigned</div><div class="value" id="hwTotalAssigned">--</div></div>
+          <div class="stat-card"><div class="label">Completion Rate</div><div class="value" id="hwCompletionRate">--</div></div>
+          <div class="stat-card"><div class="label">Overdue Count</div><div class="value" id="hwOverdueCount">--</div></div>
+          <div class="stat-card"><div class="label">Avg Submission Time</div><div class="value" id="hwAvgSubmissionTime">--</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>Homework Breakdown by Status</h3></div>
+          <table>
+            <thead><tr><th>Status</th><th>Count</th></tr></thead>
+            <tbody id="homeworkStatusList"></tbody>
+          </table>
+        </div>
+      </section>
+
       <!-- AI Usage -->
       <section id="section-ai-usage" style="display:none">
         <div class="page-header"><h1>AI Usage Report</h1></div>
         <div id="aiUsageContainer" class="loading"><div class="spinner"></div>Loading AI usage data...</div>
+      </section>
+
+      <!-- Notifications -->
+      <section id="section-notifications" style="display:none">
+        <div class="page-header"><h1>Admin Notifications</h1></div>
+        <div class="card">
+          <div id="notificationsList" class="loading"><div class="spinner"></div>Loading notifications...</div>
+        </div>
       </section>
 
       <!-- System -->
@@ -156,7 +191,9 @@
         document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
         link.classList.add('active');
 
+        if (section === 'homework') loadHomework();
         if (section === 'ai-usage') loadAiUsage();
+        if (section === 'notifications') loadNotifications();
         if (section === 'system') loadSystem();
       });
     });
@@ -179,6 +216,16 @@
         document.getElementById('approvedMcqs').textContent = data.mcq.approved;
         document.getElementById('pendingReviews').textContent = data.mcq.pendingReview;
         document.getElementById('weeklyActive').textContent = data.engagement?.active_students || 0;
+
+        // Homework stats
+        const homework = data.homework || {};
+        document.getElementById('homeworkAssigned').textContent = homework.totalAssigned || 0;
+        document.getElementById('homeworkCompletion').textContent = homework.completionRate ? `${homework.completionRate}%` : '--';
+        document.getElementById('homeworkOverdue').textContent = homework.overdueCount || 0;
+
+        // Engagement metrics
+        const metrics = data.engagementMetrics || {};
+        document.getElementById('avgDailyStudy').textContent = metrics.avgDailyStudyMin || '--';
 
         // AI
         const ai = data.ai || {};
@@ -280,6 +327,59 @@
         });
         alert('Notification broadcast queued!');
       } catch (err) { alert(err?.detail || 'Failed to send broadcast'); }
+    }
+
+    async function loadHomework() {
+      try {
+        const data = await api.adminDashboard();
+        const homework = data.homework || {};
+
+        document.getElementById('hwTotalAssigned').textContent = homework.totalAssigned || 0;
+        document.getElementById('hwCompletionRate').textContent = homework.completionRate ? `${homework.completionRate}%` : '--';
+        document.getElementById('hwOverdueCount').textContent = homework.overdueCount || 0;
+        document.getElementById('hwAvgSubmissionTime').textContent = homework.avgSubmissionTime ? `${homework.avgSubmissionTime} hours` : '--';
+
+        // Mock breakdown by status
+        const statusData = [
+          { status: 'Completed', count: homework.totalAssigned ? Math.floor(homework.totalAssigned * (homework.completionRate || 0) / 100) : 0 },
+          { status: 'Pending', count: homework.totalAssigned ? Math.floor(homework.totalAssigned * (1 - (homework.completionRate || 0) / 100) * 0.6) : 0 },
+          { status: 'Overdue', count: homework.overdueCount || 0 }
+        ];
+
+        document.getElementById('homeworkStatusList').innerHTML = statusData.map(s => `
+          <tr><td>${s.status}</td><td>${s.count}</td></tr>
+        `).join('') || '<tr><td colspan="2">No data</td></tr>';
+      } catch (err) { console.error(err); }
+    }
+
+    async function loadNotifications() {
+      try {
+        const data = await api.getAdminNotifications();
+
+        const notificationsList = data.notifications || [];
+        if (notificationsList.length === 0) {
+          document.getElementById('notificationsList').innerHTML = '<p style="padding: 16px;">No notifications at this time.</p>';
+          return;
+        }
+
+        document.getElementById('notificationsList').innerHTML = `
+          <table>
+            <thead><tr><th>Type</th><th>Message</th><th>Time</th></tr></thead>
+            <tbody>
+              ${notificationsList.map(n => `
+                <tr>
+                  <td><strong>${n.type || 'System'}</strong></td>
+                  <td>${n.message || 'No message'}</td>
+                  <td>${n.timestamp ? new Date(n.timestamp).toLocaleString() : '--'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } catch (err) {
+        document.getElementById('notificationsList').innerHTML = '<p style="padding: 16px; color: var(--danger);">Failed to load notifications</p>';
+        console.error(err);
+      }
     }
 
     loadDashboard();
