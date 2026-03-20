@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartStudy â Admin Dashboard</title>
+  <title>SmartStudy — Admin Dashboard</title>
   
   
   <link rel="stylesheet" href="css/style.css">
@@ -15,12 +15,12 @@
       <div class="logo">SmartStudy</div>
       <div class="subtitle">School Admin</div>
       <nav>
-        <a href="#" class="active" data-section="dashboard">ð Dashboard</a>
-        <a href="#" data-section="students">ð¨âð Students</a>
-        <a href="#" data-section="topics">ð Curriculum</a>
-        <a href="#" data-section="ai-usage">ð¤ AI Usage</a>
-        <a href="#" data-section="system">âï¸ System</a>
-        <a href="#" data-section="broadcast">ð¢ Broadcast</a>
+        <a href="#" class="active" data-section="dashboard">📊 Dashboard</a>
+        <a href="#" data-section="students">👨‍🎓 Students</a>
+        <a href="#" data-section="topics">📖 Curriculum</a>
+        <a href="#" data-section="ai-usage">🤖 AI Usage</a>
+        <a href="#" data-section="system">⚙️ System</a>
+        <a href="#" data-section="broadcast">📢 Broadcast</a>
       </nav>
       <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
     </aside>
@@ -262,8 +262,8 @@
               <tr><td><strong>Node.js</strong></td><td>${data.nodeVersion}</td></tr>
               <tr><td><strong>Uptime</strong></td><td>${Math.floor(data.uptime / 60)} minutes</td></tr>
               <tr><td><strong>DB Pool (used/max)</strong></td><td>${data.database.totalConnections}/${data.database.maxConnections} (${data.database.utilizationPct}%)</td></tr>
-              <tr><td><strong>OpenAI Configured</strong></td><td>${data.ai.openaiConfigured ? 'â' : 'â'}</td></tr>
-              <tr><td><strong>Gemini Configured</strong></td><td>${data.ai.geminiConfigured ? 'â' : 'â'}</td></tr>
+              <tr><td><strong>OpenAI Configured</strong></td><td>${data.ai.openaiConfigured ? '✅' : '❌'}</td></tr>
+              <tr><td><strong>Gemini Configured</strong></td><td>${data.ai.geminiConfigured ? '✅' : '❌'}</td></tr>
               <tr><td><strong>Student Daily AI Limit</strong></td><td>${data.ai.studentDailyLimit}</td></tr>
             </table>
           </div>
