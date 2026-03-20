@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartStudy â Principal Dashboard</title>
+  <title>SmartStudy — Principal Dashboard</title>
   
   
   <link rel="stylesheet" href="css/style.css">
@@ -15,10 +15,10 @@
       <div class="logo">SmartStudy</div>
       <div class="subtitle">Principal</div>
       <nav>
-        <a href="#" class="active" data-section="overview">ð School Overview</a>
-        <a href="#" data-section="class-comparison">ð« Class Comparison</a>
-        <a href="#" data-section="teachers">ð©âð« Teacher Effectiveness</a>
-        <a href="#" data-section="monthly">ð Monthly Trends</a>
+        <a href="#" class="active" data-section="overview">📊 School Overview</a>
+        <a href="#" data-section="class-comparison">🏫 Class Comparison</a>
+        <a href="#" data-section="teachers">👩‍🏫 Teacher Effectiveness</a>
+        <a href="#" data-section="monthly">📅 Monthly Trends</a>
       </nav>
       <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
     </aside>
@@ -43,9 +43,9 @@
         <div class="card">
           <div class="card-header"><h3>SIP Distribution</h3></div>
           <div class="stats-grid" id="sipDistribution">
-            <div class="stat-card"><div class="label">Excellent (â¥80)</div><div class="value sip-excellent" id="sipExcellent">--</div></div>
-            <div class="stat-card"><div class="label">Good (60â79)</div><div class="value sip-good" id="sipGood">--</div></div>
-            <div class="stat-card"><div class="label">Average (40â59)</div><div class="value sip-average" id="sipAverage">--</div></div>
+            <div class="stat-card"><div class="label">Excellent (≥80)</div><div class="value sip-excellent" id="sipExcellent">--</div></div>
+            <div class="stat-card"><div class="label">Good (60–79)</div><div class="value sip-good" id="sipGood">--</div></div>
+            <div class="stat-card"><div class="label">Average (40–59)</div><div class="value sip-average" id="sipAverage">--</div></div>
             <div class="stat-card"><div class="label">Needs Help (&lt;40)</div><div class="value sip-low" id="sipNeedsHelp">--</div></div>
           </div>
         </div>
@@ -100,7 +100,7 @@
 
         <!-- Top Performers -->
         <div class="card">
-          <div class="card-header"><h3>Top Performers (SIP â¥ 85)</h3></div>
+          <div class="card-header"><h3>Top Performers (SIP ≥ 85)</h3></div>
           <table>
             <thead><tr><th>Student ID</th><th>Subject</th><th>SIP</th><th>Trend</th></tr></thead>
             <tbody id="topPerformersList"></tbody>
@@ -186,9 +186,9 @@
     }
 
     function trendBadge(trend) {
-      if (trend === 'improving') return '<span style="color: var(--success)">â Improving</span>';
-      if (trend === 'declining') return '<span style="color: var(--danger)">â Declining</span>';
-      return '<span style="color: var(--text-secondary)">â Stable</span>';
+      if (trend === 'improving') return '<span style="color: var(--success)">↑ Improving</span>';
+      if (trend === 'declining') return '<span style="color: var(--danger)">↓ Declining</span>';
+      return '<span style="color: var(--text-secondary)">→ Stable</span>';
     }
 
     function formatMonth(dateStr) {
